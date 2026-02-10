@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/utils/responsive_utils.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_styles.dart';
-import '../../data/dummy_data.dart';
+import '../../states/appointment_state.dart';
 import '../../widgets/app_logo.dart';
 import 'booking_page.dart';
 import 'doctor_card.dart';
@@ -14,7 +15,6 @@ class HomeContent extends StatelessWidget {
   const HomeContent({super.key});
 
   void _navigateToSearchPage(BuildContext context) {
-    // إستبدل الشاشة الحالية بـ HomePage مع index 1 (Search)
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -25,6 +25,7 @@ class HomeContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final doctorsProvider = Provider.of<DoctorsProvider>(context);
     final scale = ResponsiveUtils.getScale(context);
     final isTablet = ResponsiveUtils.isTablet(context);
 
@@ -37,18 +38,11 @@ class HomeContent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ✅ اللوجو
             const Center(child: AppLogo()),
-
-            // ✅ Header
             buildHeader(context),
             SizedBox(height: isTablet ? 25 * scale : 20 * scale),
-
-            // ✅ Top Doctors Section
             TopDoctorsSection(),
             SizedBox(height: isTablet ? 30 * scale : 25 * scale),
-
-            // ✅ Search Bar و All Doctors معاً في خلفية بيضاء واحدة
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(isTablet ? 20 * scale : 16 * scale),
@@ -100,10 +94,7 @@ class HomeContent extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   SizedBox(height: isTablet ? 25 * scale : 20 * scale),
-
-                  // عنوان الـ All Doctors
                   Text(
                     "All Doctors",
                     style: AppTextStyles.headlineSmall.copyWith(
@@ -113,13 +104,12 @@ class HomeContent extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: isTablet ? 20 * scale : 16 * scale),
-
-                  // ✅ Doctor Cards
-                  ...dummyDoctors.map((doctor) {
+                  // ✅ Doctor Cards باستخدام البيانات من Provider
+                  ...doctorsProvider.allDoctors.map((doctor) {
                     return Padding(
                       padding: EdgeInsets.only(bottom: isTablet ? 16 * scale : 14 * scale),
                       child: DoctorCard(
-                        doctor: doctor,  // تمرير الـ Doctor بدلاً من الـ Map
+                        doctor: doctor,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -128,6 +118,9 @@ class HomeContent extends StatelessWidget {
                                 doctorName: doctor.name,
                                 specialty: doctor.specialty,
                                 doctorImage: doctor.image,
+                                rating: doctor.rating,
+                                location: doctor.location,
+                                consultationFee: doctor.consultationFee,
                               ),
                             ),
                           );
@@ -138,7 +131,6 @@ class HomeContent extends StatelessWidget {
                 ],
               ),
             ),
-
             SizedBox(height: isTablet ? 30 * scale : 25 * scale),
           ],
         ),

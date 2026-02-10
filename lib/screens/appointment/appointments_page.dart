@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/utils/responsive_utils.dart';
 import '../../models/doctor_model.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_styles.dart';
+import '../../states/appointment_state.dart';
 import '../home/booking_page.dart';
 import '../home/bottom_navigation.dart';
 import '../home/doctor_card.dart';
-import '../../data/dummy_data.dart'; // تأكد من إضافة هذا الاستيراد
+import '../../data/dummy_data.dart';
 
 class AppointmentsPageState extends State<AppointmentsPage> {
   int _selectedTab = 0; // 0: Saved, 1: Completed, 2: Cancelled
 
-  // Use a separate list for the saved doctors
-  List<Doctor> _savedDoctors = dummyDoctors.where((doctor) => doctor.isSaved).toList();
-  List<Booking> _completedAppointments = dummyBookings.where((booking) => booking.status == 'Completed').toList();
-  List<Booking> _cancelledAppointments = dummyBookings.where((booking) => booking.status == 'Cancelled').toList();
-
   @override
   Widget build(BuildContext context) {
+    final doctorsProvider = Provider.of<DoctorsProvider>(context);
     final scale = ResponsiveUtils.getScale(context);
     final isTablet = ResponsiveUtils.isTablet(context);
 
@@ -62,14 +60,13 @@ class AppointmentsPageState extends State<AppointmentsPage> {
           ),
           // Content for the selected tab
           Expanded(
-            child: _buildCurrentTabContent(scale, isTablet),
+            child: _buildCurrentTabContent(doctorsProvider, scale, isTablet),
           ),
         ],
       ),
     );
   }
 
-  // Tab Button Builder
   Widget _buildTabButton(String text, int index, double scale, bool isTablet) {
     final isSelected = _selectedTab == index;
     return Expanded(
@@ -99,29 +96,37 @@ class AppointmentsPageState extends State<AppointmentsPage> {
     );
   }
 
-  // Build content for the selected tab
-  Widget _buildCurrentTabContent(double scale, bool isTablet) {
+  Widget _buildCurrentTabContent(DoctorsProvider doctorsProvider, double scale, bool isTablet) {
     switch (_selectedTab) {
       case 0: // Saved
-        return _buildSavedTab(scale, isTablet);
+        return _buildSavedTab(doctorsProvider, scale, isTablet);
       case 1: // Completed
-        return _buildAppointmentsTab(_completedAppointments, scale, isTablet);
+        return _buildAppointmentsTab(
+          dummyBookings.where((booking) => booking.status == 'Completed').toList(),
+          scale,
+          isTablet,
+        );
       case 2: // Cancelled
-        return _buildAppointmentsTab(_cancelledAppointments, scale, isTablet);
+        return _buildAppointmentsTab(
+          dummyBookings.where((booking) => booking.status == 'Cancelled').toList(),
+          scale,
+          isTablet,
+        );
       default:
-        return _buildSavedTab(scale, isTablet);
+        return _buildSavedTab(doctorsProvider, scale, isTablet);
     }
   }
 
-  // Saved tab content
-  Widget _buildSavedTab(double scale, bool isTablet) {
+  Widget _buildSavedTab(DoctorsProvider doctorsProvider, double scale, bool isTablet) {
+    final savedDoctors = doctorsProvider.savedDoctors;
+
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 16 * scale),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Saved Doctors (${_savedDoctors.length})",
+            "Saved Doctors (${savedDoctors.length})",
             style: AppTextStyles.headlineSmall.copyWith(
               fontSize: 20 * scale,
               fontWeight: FontWeight.bold,
@@ -129,35 +134,24 @@ class AppointmentsPageState extends State<AppointmentsPage> {
             ),
           ),
           SizedBox(height: 16 * scale),
-          if (_savedDoctors.isNotEmpty)
-            ..._savedDoctors.map((doctor) {
+          if (savedDoctors.isNotEmpty)
+            ...savedDoctors.map((doctor) {
               return Padding(
                 padding: EdgeInsets.only(bottom: 16 * scale),
                 child: DoctorCard(
                   doctor: doctor,
-                  onSaveChanged: () {
-                    setState(() {
-                      doctor.isSaved = !doctor.isSaved;
-                      if (doctor.isSaved) {
-                        _savedDoctors.add(doctor);
-                      } else {
-                        _savedDoctors.remove(doctor);
-                      }
-                    });
-                  },
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            BookingPage(
-                              doctorName: doctor.name,
-                              specialty: doctor.specialty,
-                              doctorImage: doctor.image,
-                              rating: doctor.rating,
-                              location: doctor.location,
-                              consultationFee: doctor.consultationFee,
-                            ),
+                        builder: (context) => BookingPage(
+                          doctorName: doctor.name,
+                          specialty: doctor.specialty,
+                          doctorImage: doctor.image,
+                          rating: doctor.rating,
+                          location: doctor.location,
+                          consultationFee: doctor.consultationFee,
+                        ),
                       ),
                     );
                   },
@@ -197,9 +191,7 @@ class AppointmentsPageState extends State<AppointmentsPage> {
     );
   }
 
-  // Completed and Cancelled Appointments Tab Content
-  Widget _buildAppointmentsTab(List<Booking> appointments, double scale,
-      bool isTablet) {
+  Widget _buildAppointmentsTab(List<Booking> appointments, double scale, bool isTablet) {
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 16 * scale),
       child: Column(
@@ -214,17 +206,13 @@ class AppointmentsPageState extends State<AppointmentsPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    _selectedTab == 1
-                        ? Icons.check_circle_outline
-                        : Icons.cancel_outlined,
+                    _selectedTab == 1 ? Icons.check_circle_outline : Icons.cancel_outlined,
                     size: 60 * scale,
                     color: AppColors.grey,
                   ),
                   SizedBox(height: 16 * scale),
                   Text(
-                    _selectedTab == 1
-                        ? "No completed appointments"
-                        : "No cancelled appointments",
+                    _selectedTab == 1 ? "No completed appointments" : "No cancelled appointments",
                     style: AppTextStyles.headlineSmall.copyWith(
                       color: AppColors.grey,
                     ),
@@ -237,9 +225,7 @@ class AppointmentsPageState extends State<AppointmentsPage> {
     );
   }
 
-  // Appointment Card Builder
-  Widget _buildAppointmentCard(Booking appointment, double scale,
-      bool isTablet) {
+  Widget _buildAppointmentCard(Booking appointment, double scale, bool isTablet) {
     return GestureDetector(
       onTap: () {
         if (_selectedTab == 1) {
@@ -363,15 +349,10 @@ class AppointmentsPageState extends State<AppointmentsPage> {
                     ],
                   ),
                   SizedBox(height: 16 * scale),
-                  _buildDetailRow("Date & Time",
-                      "${appointment.date} • ${appointment.time}", scale,
-                      isTablet),
-                  _buildDetailRow(
-                      "Location", appointment.location, scale, isTablet),
-                  _buildDetailRow("Fee",
-                      "EGP ${appointment.consultationFee.toStringAsFixed(0)}",
-                      scale, isTablet),
-                  if (_selectedTab == 2) ...[ // Rebook only for cancelled
+                  _buildDetailRow("Date & Time", "${appointment.date} • ${appointment.time}", scale, isTablet),
+                  _buildDetailRow("Location", appointment.location, scale, isTablet),
+                  _buildDetailRow("Fee", "EGP ${appointment.consultationFee.toStringAsFixed(0)}", scale, isTablet),
+                  if (_selectedTab == 2) ...[
                     SizedBox(height: 16 * scale),
                     Divider(color: AppColors.greyLight, thickness: 1),
                     SizedBox(height: 12 * scale),
@@ -408,27 +389,23 @@ class AppointmentsPageState extends State<AppointmentsPage> {
     );
   }
 
-  // Navigate to the Booking Page
   void _navigateToBookingPage(Booking appointment) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            BookingPage(
-              doctorName: appointment.doctorName,
-              specialty: appointment.specialty,
-              doctorImage: appointment.doctorImage,
-              rating: appointment.rating,
-              location: appointment.location,
-              consultationFee: appointment.consultationFee,
-            ),
+        builder: (context) => BookingPage(
+          doctorName: appointment.doctorName,
+          specialty: appointment.specialty,
+          doctorImage: appointment.doctorImage,
+          rating: appointment.rating,
+          location: appointment.location,
+          consultationFee: appointment.consultationFee,
+        ),
       ),
     );
   }
 
-  // Helper method to build the detail row
-  Widget _buildDetailRow(String label, String value, double scale,
-      bool isTablet) {
+  Widget _buildDetailRow(String label, String value, double scale, bool isTablet) {
     return Padding(
       padding: EdgeInsets.only(bottom: 8 * scale),
       child: Row(
@@ -459,4 +436,3 @@ class AppointmentsPageState extends State<AppointmentsPage> {
     );
   }
 }
-

@@ -1,43 +1,58 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/doctor_model.dart';
+import '../data/dummy_data.dart';
 
-class AppointmentState extends ChangeNotifier {
-  List<Doctor> _doctors = []; // قائمة الأطباء
+class DoctorsProvider extends ChangeNotifier {
+  List<Doctor> _doctors = [...dummyDoctors];
 
-  // الحصول على الأطباء المحفوظين
-  List<Doctor> get savedDoctors {
-    return _doctors.where((doctor) => doctor.isSaved).toList();
+  // Getter للقائمة الأصلية
+  List<Doctor> get allDoctors => List.from(_doctors);
+
+  // Getter للأطباء المحفوظين فقط
+  List<Doctor> get savedDoctors =>
+      _doctors.where((doctor) => doctor.isSaved).toList();
+
+  // Getter للأطباء غير المحفوظين
+  List<Doctor> get unsavedDoctors =>
+      _doctors.where((doctor) => !doctor.isSaved).toList();
+
+  // البحث عن طبيب بالاسم
+  Doctor? getDoctorById(String name) {
+    try {
+      return _doctors.firstWhere((doctor) => doctor.name == name);
+    } catch (e) {
+      return null;
+    }
   }
 
-  // إضافة دكتور جديد
-  void addDoctor(Doctor doctor) {
-    _doctors.add(doctor);
-    notifyListeners();
+  // تغيير حالة الحفظ لطبيب
+  void toggleSaveDoctor(String doctorName) {
+    final index = _doctors.indexWhere((doctor) => doctor.name == doctorName);
+
+    if (index != -1) {
+      _doctors[index] = _doctors[index].copyWith(
+          isSaved: !_doctors[index].isSaved
+      );
+      notifyListeners();
+    }
   }
 
-  // تغيير حالة الحفظ
-  void toggleSaveDoctor(Doctor doctor) {
-    doctor.isSaved = !doctor.isSaved;
-    notifyListeners();  // تحديث الواجهة بعد التغيير
+  // التحقق إذا كان الطبيب محفوظاً
+  bool isDoctorSaved(String doctorName) {
+    final doctor = getDoctorById(doctorName);
+    return doctor?.isSaved ?? false;
   }
 
-  // إضافة الحجز الجديد
-  List<Booking> _appointments = [];
+  // تحديث تقييم الطبيب
+  void updateDoctorRating(String doctorName, double newRating) {
+    final index = _doctors.indexWhere((doctor) => doctor.name == doctorName);
 
-  List<Booking> get appointments => _appointments;
-
-  void addAppointment(Booking appointment) {
-    _appointments.add(appointment);
-    notifyListeners();
-  }
-
-  // الحصول على الحجوزات المكتملة
-  List<Booking> getCompletedAppointments() {
-    return _appointments.where((appointment) => appointment.status == 'Completed').toList();
-  }
-
-  // الحصول على الحجوزات الملغاة
-  List<Booking> getCancelledAppointments() {
-    return _appointments.where((appointment) => appointment.status == 'Cancelled').toList();
+    if (index != -1) {
+      _doctors[index] = _doctors[index].copyWith(
+          rating: newRating
+      );
+      notifyListeners();
+    }
   }
 }

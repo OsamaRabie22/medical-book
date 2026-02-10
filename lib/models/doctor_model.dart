@@ -13,7 +13,7 @@ class Doctor {
   String image;
   List<String> availableTimes;
   double consultationFee;
-  bool isSaved;  // إضافة الحقل هنا
+  bool isSaved;
 
   Doctor({
     required this.name,
@@ -24,8 +24,33 @@ class Doctor {
     required this.image,
     required this.availableTimes,
     required this.consultationFee,
-    this.isSaved = false,  // تعيين القيمة الافتراضية
+    this.isSaved = false,
   });
+
+  // إضافة دالة copyWith
+  Doctor copyWith({
+    String? name,
+    String? specialty,
+    String? location,
+    String? contact,
+    double? rating,
+    String? image,
+    List<String>? availableTimes,
+    double? consultationFee,
+    bool? isSaved,
+  }) {
+    return Doctor(
+      name: name ?? this.name,
+      specialty: specialty ?? this.specialty,
+      location: location ?? this.location,
+      contact: contact ?? this.contact,
+      rating: rating ?? this.rating,
+      image: image ?? this.image,
+      availableTimes: availableTimes ?? this.availableTimes,
+      consultationFee: consultationFee ?? this.consultationFee,
+      isSaved: isSaved ?? this.isSaved,
+    );
+  }
 }
 
 

@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_styles.dart';
 import '../../core/utils/responsive_utils.dart';
-import '../../models/doctor_model.dart'; // تأكد من إضافة هذا الـ import
+import '../../models/doctor_model.dart';
+import '../../states/appointment_state.dart'; // إضافة هذا الاستيراد
 
 class DoctorCard extends StatefulWidget {
-  final Doctor doctor; // تغيير هنا ليكون من نوع Doctor
+  final Doctor doctor;
   final VoidCallback onTap;
-  final bool isInitiallySaved;
-  final VoidCallback? onSaveChanged;
 
   const DoctorCard({
     super.key,
     required this.doctor,
     required this.onTap,
-    this.isInitiallySaved = false,
-    this.onSaveChanged,
   });
 
   @override
@@ -23,23 +21,10 @@ class DoctorCard extends StatefulWidget {
 }
 
 class _DoctorCardState extends State<DoctorCard> {
-  late bool _isSaved;
-
-  @override
-  void initState() {
-    super.initState();
-    _isSaved = widget.isInitiallySaved;
-  }
-
-  void _toggleSave() {
-    setState(() {
-      _isSaved = !_isSaved;
-    });
-    widget.onSaveChanged?.call();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final doctorsProvider = Provider.of<DoctorsProvider>(context);
+    final isSaved = doctorsProvider.isDoctorSaved(widget.doctor.name);
     final scale = ResponsiveUtils.getScale(context);
     final isTablet = ResponsiveUtils.isTablet(context);
 
@@ -49,8 +34,7 @@ class _DoctorCardState extends State<DoctorCard> {
         padding: EdgeInsets.all(isTablet ? 20 * scale : 18 * scale),
         decoration: BoxDecoration(
           color: AppColors.scaffoldBackground,
-          borderRadius:
-          BorderRadius.circular(isTablet ? 24 * scale : 22 * scale),
+          borderRadius: BorderRadius.circular(isTablet ? 24 * scale : 22 * scale),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -64,8 +48,7 @@ class _DoctorCardState extends State<DoctorCard> {
           children: [
             // الصورة
             ClipRRect(
-              borderRadius:
-              BorderRadius.circular(isTablet ? 20 * scale : 18 * scale),
+              borderRadius: BorderRadius.circular(isTablet ? 20 * scale : 18 * scale),
               child: Image.asset(
                 widget.doctor.image,
                 width: isTablet ? 100 * scale : 85 * scale,
@@ -93,11 +76,13 @@ class _DoctorCardState extends State<DoctorCard> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: _toggleSave,
+                        onTap: () {
+                          doctorsProvider.toggleSaveDoctor(widget.doctor.name);
+                        },
                         child: Icon(
-                          _isSaved ? Icons.bookmark : Icons.bookmark_border,
+                          isSaved ? Icons.bookmark : Icons.bookmark_border,
                           size: isTablet ? 26 * scale : 24 * scale,
-                          color: _isSaved ? AppColors.primary : AppColors.grey,
+                          color: isSaved ? AppColors.primary : AppColors.grey,
                         ),
                       ),
                     ],
