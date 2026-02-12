@@ -4,8 +4,117 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_styles.dart';
 import '../../../core/utils/responsive_utils.dart';
 import '../../../core/utils/validators.dart';
+import '../../../models/patient_model.dart';
 import '../../../widgets/custom_input_field.dart';
 import 'medical_info_page.dart';
+
+// ✅ List of Egyptian Cities in English
+const List<String> egyptianCities = [
+  'Cairo',
+  'Alexandria',
+  'Giza',
+  'Shubra El Kheima',
+  'Port Said',
+  'Suez',
+  'El Mahalla El Kubra',
+  'Tanta',
+  'Mansoura',
+  'Asyut',
+  'Zagazig',
+  'Ismailia',
+  'Kafr El Sheikh',
+  'Damanhur',
+  'Fayoum',
+  'Qena',
+  'Sohag',
+  'Benha',
+  'Minya',
+  'Beni Suef',
+  'Luxor',
+  'Aswan',
+  'Damietta',
+  'Hurghada',
+  'Sharm El Sheikh',
+  'Marsa Matrouh',
+  'Arish',
+  'Khanka',
+  'Qalyub',
+  '10th of Ramadan',
+  '6th of October',
+  'Badr',
+  'Shorouk',
+  'Obour',
+  'Hadayek October',
+  'Borg El Arab',
+  'Nuweiba',
+  'Dahab',
+  'Taba',
+  'Ras Sedr',
+  'El Tor',
+  'Shalateen',
+  'Halaib',
+  'Abu Qir',
+  'Edfu',
+  'Kom Ombo',
+  'Nasr Nuba',
+  'Abu Simbel',
+  'Desouk',
+  'Fouh',
+  'Baltim',
+  'Metoubes',
+  'Hawamdeya',
+  'Saf',
+  'Ayat',
+  'Atfih',
+  'Bahariya Oasis',
+  'Dakhla Oasis',
+  'Kharga Oasis',
+  'Sinnuris',
+  'Tamiya',
+  'Abshaway',
+  'Youssef El Seddik',
+  'Itsa',
+  'Maghagha',
+  'Beni Mazar',
+  'Matay',
+  'Samalut',
+  'Abu Qurqas',
+  'Mallawi',
+  'Deir Mawas',
+  'El Adwa',
+  'Manfalut',
+  'Abnub',
+  'Abu Tij',
+  'El Ghanayem',
+  'Sedfa',
+  'Tahta',
+  'Gerga',
+  'El Balyana',
+  'El Maragha',
+  'El Monshah',
+  'Saqultah',
+  'Akhmim',
+  'Dar El Salam',
+  'Naqada',
+  'Qus',
+  'Luxor',
+  'El Tod',
+  'Armant',
+  'Esna',
+  'Edfu',
+  'El Sabaiya',
+  'Kom Ombo',
+  'Daraw',
+  'Nasr Nuba',
+  'Kalabsha',
+  'El Reidah',
+  'Ras Gharib',
+  'Safaga',
+  'El Quseir',
+  'Marsa Alam',
+  'Shalateen',
+  'Halaib',
+];
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -23,15 +132,18 @@ class _SignupPageState extends State<SignupPage> {
 
   String? _selectedGender;
   DateTime? _selectedDate;
+  bool _isMarried = false;
+  String? _selectedCity; // ✅ Selected city
 
-  // متغيرات لتتبع الأخطاء
-  bool _nameError = false;
-  bool _emailError = false;
-  bool _phoneError = false;
-  bool _passwordError = false;
-  bool _confirmPasswordError = false;
-  bool _genderError = false;
-  bool _birthDateError = false;
+  // Validation errors
+  String? _nameError;
+  String? _emailError;
+  String? _phoneError;
+  String? _cityError;
+  String? _passwordError;
+  String? _confirmPasswordError;
+  String? _genderError;
+  String? _birthDateError;
 
   @override
   Widget build(BuildContext context) {
@@ -40,44 +152,43 @@ class _SignupPageState extends State<SignupPage> {
     Future<void> _selectDate() async {
       final DateTime? picked = await showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
+        initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
         firstDate: DateTime(1900),
         lastDate: DateTime.now(),
       );
       if (picked != null && picked != _selectedDate) {
         setState(() {
           _selectedDate = picked;
-          _birthDateError = false;
+          _birthDateError = null;
         });
       }
     }
 
-    String _calculateAge() {
-      if (_selectedDate == null) return '';
-      return Validators.calculateAge(_selectedDate!).toString();
-    }
-
     void _validateAllFields() {
       setState(() {
-        _nameError = _nameController.text.isEmpty;
-        _emailError = !Validators.isValidEmail(_emailController.text);
-        _phoneError = !Validators.isValidPhone(_phoneController.text);
-        _passwordError = !Validators.isValidPassword(_passwordController.text);
-        _confirmPasswordError =
-            _confirmPasswordController.text != _passwordController.text;
-        _genderError = _selectedGender == null;
-        _birthDateError = _selectedDate == null;
+        _nameError = Validators.validateName(_nameController.text);
+        _emailError = Validators.validateEmail(_emailController.text);
+        _phoneError = Validators.validatePhone(_phoneController.text);
+        _cityError = _selectedCity == null ? 'Please select your city' : null;
+        _passwordError = Validators.validatePassword(_passwordController.text);
+        _confirmPasswordError = Validators.validateConfirmPassword(
+          _passwordController.text,
+          _confirmPasswordController.text,
+        );
+        _genderError = Validators.validateGender(_selectedGender);
+        _birthDateError = Validators.validateBirthDate(_selectedDate);
       });
     }
 
     bool _canProceed() {
-      return !_nameError &&
-          !_emailError &&
-          !_phoneError &&
-          !_passwordError &&
-          !_confirmPasswordError &&
-          !_genderError &&
-          !_birthDateError;
+      return _nameError == null &&
+          _emailError == null &&
+          _phoneError == null &&
+          _cityError == null &&
+          _passwordError == null &&
+          _confirmPasswordError == null &&
+          _genderError == null &&
+          _birthDateError == null;
     }
 
     return Scaffold(
@@ -90,7 +201,7 @@ class _SignupPageState extends State<SignupPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // ✅ اللوجو
+            // Logo
             RichText(
               text: TextSpan(
                 style: AppTextStyles.headlineLarge.copyWith(
@@ -111,7 +222,7 @@ class _SignupPageState extends State<SignupPage> {
 
             SizedBox(height: 20 * scale),
 
-            // ✅ صورة رمزية
+            // Avatar
             Container(
               height: 120 * scale,
               width: 120 * scale,
@@ -147,62 +258,15 @@ class _SignupPageState extends State<SignupPage> {
 
             SizedBox(height: 30 * scale),
 
-            // ✅ الاسم
+            // Full Name
             _buildInputField(
               controller: _nameController,
               hint: "Full Name *",
               icon: Icons.person_outline,
               error: _nameError,
-              errorText: "Please enter your name",
-              scale: scale,
-            ),
-
-            SizedBox(height: 16 * scale),
-
-            // ✅ الإيميل
-            _buildInputField(
-              controller: _emailController,
-              hint: "Email Address *",
-              icon: Icons.email_outlined,
-              error: _emailError,
-              errorText: "Please enter a valid email",
-              scale: scale,
-            ),
-
-            SizedBox(height: 16 * scale),
-
-            // ✅ رقم التليفون
-            _buildInputField(
-              controller: _phoneController,
-              hint: "Phone Number *",
-              icon: Icons.phone_outlined,
-              error: _phoneError,
-              errorText: "Please enter a valid phone number",
-              keyboardType: TextInputType.phone,
-              scale: scale,
-            ),
-
-            SizedBox(height: 16 * scale),
-
-            // ✅ تاريخ الميلاد
-            _buildDateField(
-              selectedDate: _selectedDate,
-              onTap: _selectDate,
-              error: _birthDateError,
-              calculateAge: _calculateAge,
-              scale: scale,
-            ),
-
-            SizedBox(height: 16 * scale),
-
-            // ✅ النوع
-            _buildGenderField(
-              selectedGender: _selectedGender,
-              error: _genderError,
               onChanged: (value) {
                 setState(() {
-                  _selectedGender = value;
-                  _genderError = false;
+                  _nameError = Validators.validateName(value);
                 });
               },
               scale: scale,
@@ -210,50 +274,155 @@ class _SignupPageState extends State<SignupPage> {
 
             SizedBox(height: 16 * scale),
 
-            // ✅ الباسوورد
+            // Email
             _buildInputField(
-              controller: _passwordController,
-              hint: "Password *",
-              icon: Icons.lock_outline,
-              isPassword: true,
-              error: _passwordError,
-              errorText: "Password must be at least 6 characters",
+              controller: _emailController,
+              hint: "Email Address *",
+              icon: Icons.email_outlined,
+              error: _emailError,
+              keyboardType: TextInputType.emailAddress,
+              onChanged: (value) {
+                setState(() {
+                  _emailError = Validators.validateEmail(value);
+                });
+              },
               scale: scale,
             ),
 
             SizedBox(height: 16 * scale),
 
-            // ✅ تأكيد الباسوورد
+            // Phone
+            _buildInputField(
+              controller: _phoneController,
+              hint: "Phone Number * (01xxxxxxxxx)",
+              icon: Icons.phone_outlined,
+              error: _phoneError,
+              keyboardType: TextInputType.phone,
+              onChanged: (value) {
+                setState(() {
+                  _phoneError = Validators.validatePhone(value);
+                });
+              },
+              scale: scale,
+            ),
+
+            SizedBox(height: 16 * scale),
+
+            // ✅ City Dropdown Field
+            _buildCityField(
+              selectedCity: _selectedCity,
+              error: _cityError,
+              onChanged: (value) {
+                setState(() {
+                  _selectedCity = value;
+                  _cityError = null;
+                });
+              },
+              scale: scale,
+            ),
+
+            SizedBox(height: 16 * scale),
+
+            // Birth Date
+            _buildDateField(
+              selectedDate: _selectedDate,
+              onTap: _selectDate,
+              error: _birthDateError,
+              scale: scale,
+            ),
+
+            SizedBox(height: 16 * scale),
+
+            // Gender
+            _buildGenderField(
+              selectedGender: _selectedGender,
+              error: _genderError,
+              onChanged: (value) {
+                setState(() {
+                  _selectedGender = value;
+                  _genderError = Validators.validateGender(value);
+                });
+              },
+              scale: scale,
+            ),
+
+            SizedBox(height: 16 * scale),
+
+            // Marital Status
+            _buildMaritalStatusField(
+              isMarried: _isMarried,
+              onChanged: (value) {
+                setState(() {
+                  _isMarried = value;
+                });
+              },
+              scale: scale,
+            ),
+
+            SizedBox(height: 16 * scale),
+
+            // Password
+            _buildInputField(
+              controller: _passwordController,
+              hint: "Password * (6-25 characters)",
+              icon: Icons.lock_outline,
+              isPassword: true,
+              error: _passwordError,
+              onChanged: (value) {
+                setState(() {
+                  _passwordError = Validators.validatePassword(value);
+                  _confirmPasswordError = Validators.validateConfirmPassword(
+                    value,
+                    _confirmPasswordController.text,
+                  );
+                });
+              },
+              scale: scale,
+            ),
+
+            SizedBox(height: 16 * scale),
+
+            // Confirm Password
             _buildInputField(
               controller: _confirmPasswordController,
               hint: "Confirm Password *",
               icon: Icons.lock_outline,
               isPassword: true,
               error: _confirmPasswordError,
-              errorText: "Passwords do not match",
+              onChanged: (value) {
+                setState(() {
+                  _confirmPasswordError = Validators.validateConfirmPassword(
+                    _passwordController.text,
+                    value,
+                  );
+                });
+              },
               scale: scale,
             ),
 
             SizedBox(height: 30 * scale),
 
-            // ✅ زر المتابعة
+            // Continue Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
                   _validateAllFields();
                   if (_canProceed()) {
+                    final patient = Patient(
+                      patientName: _nameController.text,
+                      patientAge: Validators.calculateAge(_selectedDate!),
+                      patientGender: Validators.formatGenderForApi(_selectedGender!),
+                      patientCity: _selectedCity!, // ✅ استخدام المدينة المختارة
+                      patientEmail: _emailController.text,
+                      patientPassword: _passwordController.text,
+                      patientMarried: _isMarried,
+                      patientPhone: _phoneController.text,
+                      patientImage: null,
+                    );
+
                     Get.to(
-                      () => MedicalInfoPage(
-                        patientData: PatientBasicInfo(
-                          name: _nameController.text,
-                          email: _emailController.text,
-                          phone: _phoneController.text,
-                          birthDate: _selectedDate!,
-                          gender: _selectedGender!,
-                          password: _passwordController.text,
-                        ),
-                      ),
+                          () => MedicalInfoPage(patient: patient),
                     );
                   } else {
                     Get.snackbar(
@@ -261,6 +430,7 @@ class _SignupPageState extends State<SignupPage> {
                       'Please fix all errors before proceeding',
                       backgroundColor: AppColors.error.withOpacity(0.1),
                       colorText: AppColors.error,
+                      snackPosition: SnackPosition.BOTTOM,
                     );
                   }
                 },
@@ -284,7 +454,7 @@ class _SignupPageState extends State<SignupPage> {
 
             SizedBox(height: 20 * scale),
 
-            // ✅ تسجيل الدخول
+            // Login Link
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -296,7 +466,7 @@ class _SignupPageState extends State<SignupPage> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Get.back(); // ✅ GetX للعودة
+                    Get.back();
                   },
                   child: Text(
                     "Login",
@@ -314,15 +484,94 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
+  // ✅ City Dropdown Field
+  Widget _buildCityField({
+    required String? selectedCity,
+    required String? error,
+    required Function(String?) onChanged,
+    required double scale,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "City *",
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: error != null ? AppColors.error : AppColors.primaryDark,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        SizedBox(height: 8 * scale),
+        Container(
+          decoration: BoxDecoration(
+            color: error != null
+                ? AppColors.error.withOpacity(0.05)
+                : AppColors.primary.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(18 * scale),
+            border: Border.all(
+              color: error != null
+                  ? AppColors.error
+                  : AppColors.primary.withOpacity(0.3),
+              width: 1.5 * scale,
+            ),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 16 * scale),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: selectedCity,
+              hint: Text(
+                "Select your city",
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.grey,
+                ),
+              ),
+              isExpanded: true,
+              icon: Icon(
+                Icons.arrow_drop_down_circle_outlined,
+                color: error != null ? AppColors.error : AppColors.primary,
+                size: 22 * scale,
+              ),
+              items: egyptianCities.map((city) {
+                return DropdownMenuItem(
+                  value: city,
+                  child: Text(
+                    city,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.primaryDark,
+                    ),
+                  ),
+                );
+              }).toList(),
+              onChanged: onChanged,
+              dropdownColor: AppColors.white,
+              borderRadius: BorderRadius.circular(12 * scale),
+            ),
+          ),
+        ),
+        if (error != null)
+          Padding(
+            padding: EdgeInsets.only(left: 16 * scale, top: 4 * scale),
+            child: Text(
+              error,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.error,
+                fontSize: 11 * scale,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   Widget _buildInputField({
     required TextEditingController controller,
     required String hint,
     required IconData icon,
     bool isPassword = false,
-    bool error = false,
-    String? errorText,
+    String? error,
     TextInputType keyboardType = TextInputType.text,
     required double scale,
+    Function(String)? onChanged,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,17 +581,19 @@ class _SignupPageState extends State<SignupPage> {
           hint: hint,
           icon: icon,
           isPassword: isPassword,
-          hasError: error,
+          hasError: error != null,
           keyboardType: keyboardType,
+          onChanged: onChanged,
           scale: scale,
         ),
-        if (error && errorText != null)
+        if (error != null)
           Padding(
             padding: EdgeInsets.only(left: 16 * scale, top: 4 * scale),
             child: Text(
-              errorText,
+              error,
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.error,
+                fontSize: 11 * scale,
               ),
             ),
           ),
@@ -353,8 +604,7 @@ class _SignupPageState extends State<SignupPage> {
   Widget _buildDateField({
     required DateTime? selectedDate,
     required VoidCallback onTap,
-    required bool error,
-    required String Function() calculateAge,
+    required String? error,
     required double scale,
   }) {
     return Column(
@@ -362,52 +612,54 @@ class _SignupPageState extends State<SignupPage> {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: error
+            color: error != null
                 ? AppColors.error.withOpacity(0.05)
                 : AppColors.primary.withOpacity(0.05),
             borderRadius: BorderRadius.circular(18 * scale),
             border: Border.all(
-              color:
-                  error ? AppColors.error : AppColors.primary.withOpacity(0.3),
+              color: error != null
+                  ? AppColors.error
+                  : AppColors.primary.withOpacity(0.3),
             ),
           ),
           child: ListTile(
             leading: Icon(
               Icons.cake_outlined,
               size: 20 * scale,
-              color: error ? AppColors.error : AppColors.primary,
+              color: error != null ? AppColors.error : AppColors.primary,
             ),
             title: Text(
               selectedDate == null
                   ? "Birth Date *"
-                  : "Age: ${calculateAge()} years",
+                  : "Age: ${Validators.calculateAge(selectedDate)} years",
               style: AppTextStyles.bodyMedium.copyWith(
-                color: error ? AppColors.error : AppColors.primaryDark,
+                color: error != null ? AppColors.error : AppColors.primaryDark,
               ),
             ),
             subtitle: selectedDate != null
                 ? Text(
-                    "Born: ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.greyDark,
-                    ),
-                  )
+              "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.greyDark,
+              ),
+            )
                 : null,
             trailing: Icon(
               Icons.calendar_today,
               size: 18 * scale,
-              color: error ? AppColors.error : AppColors.primary,
+              color: error != null ? AppColors.error : AppColors.primary,
             ),
             onTap: onTap,
           ),
         ),
-        if (error)
+        if (error != null)
           Padding(
             padding: EdgeInsets.only(left: 16 * scale, top: 4 * scale),
             child: Text(
-              "Please select your birth date",
+              error,
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.error,
+                fontSize: 11 * scale,
               ),
             ),
           ),
@@ -417,7 +669,7 @@ class _SignupPageState extends State<SignupPage> {
 
   Widget _buildGenderField({
     required String? selectedGender,
-    required bool error,
+    required String? error,
     required Function(String?) onChanged,
     required double scale,
   }) {
@@ -427,60 +679,53 @@ class _SignupPageState extends State<SignupPage> {
         Text(
           "Gender *",
           style: AppTextStyles.bodyMedium.copyWith(
-            color: error ? AppColors.error : AppColors.primaryDark,
+            color: error != null ? AppColors.error : AppColors.primaryDark,
             fontWeight: FontWeight.w500,
           ),
         ),
-
         SizedBox(height: 8 * scale),
-
-        // ✅ تصميم أنظف - أزرار بجانب بعض
         Container(
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.circular(12 * scale),
             border: Border.all(
-              color: error ? AppColors.error : AppColors.greyLight,
+              color: error != null ? AppColors.error : AppColors.greyLight,
               width: 1.5 * scale,
             ),
           ),
           padding: EdgeInsets.all(8 * scale),
           child: Row(
             children: [
-              // زر Male
               Expanded(
                 child: _buildGenderChip(
                   label: "Male",
                   isSelected: selectedGender == "Male",
                   onTap: () => onChanged("Male"),
                   scale: scale,
-                  error: error,
+                  error: error != null,
                 ),
               ),
-
               SizedBox(width: 8 * scale),
-
-              // زر Female
               Expanded(
                 child: _buildGenderChip(
                   label: "Female",
                   isSelected: selectedGender == "Female",
                   onTap: () => onChanged("Female"),
                   scale: scale,
-                  error: error,
+                  error: error != null,
                 ),
               ),
             ],
           ),
         ),
-
-        if (error)
+        if (error != null)
           Padding(
             padding: EdgeInsets.only(left: 8 * scale, top: 4 * scale),
             child: Text(
-              "Please select your gender",
+              error,
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.error,
+                fontSize: 11 * scale,
               ),
             ),
           ),
@@ -522,6 +767,46 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
+  Widget _buildMaritalStatusField({
+    required bool isMarried,
+    required Function(bool) onChanged,
+    required double scale,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(18 * scale),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.3),
+        ),
+      ),
+      child: ListTile(
+        leading: Icon(
+          isMarried ? Icons.family_restroom : Icons.person,
+          color: AppColors.primary,
+          size: 20 * scale,
+        ),
+        title: Text(
+          "Marital Status",
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.primaryDark,
+          ),
+        ),
+        trailing: Switch(
+          value: isMarried,
+          onChanged: onChanged,
+          activeColor: AppColors.primary,
+        ),
+        subtitle: Text(
+          isMarried ? "Married" : "Single",
+          style: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.greyDark,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -531,22 +816,4 @@ class _SignupPageState extends State<SignupPage> {
     _phoneController.dispose();
     super.dispose();
   }
-}
-
-class PatientBasicInfo {
-  final String name;
-  final String email;
-  final String phone;
-  final DateTime birthDate;
-  final String gender;
-  final String password;
-
-  PatientBasicInfo({
-    required this.name,
-    required this.email,
-    required this.phone,
-    required this.birthDate,
-    required this.gender,
-    required this.password,
-  });
 }

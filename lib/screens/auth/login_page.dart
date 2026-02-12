@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:medical_book/screens/auth/signup_page.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_styles.dart';
 import '../../../core/utils/responsive_utils.dart';
+import '../../../core/utils/validators.dart';
+import '../../../models/patient_model.dart';
 import '../../../widgets/custom_input_field.dart';
 import '../home/home_page.dart';
+import 'signup_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,12 +17,36 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  String? _emailError;
+  String? _passwordError;
+
   void _login() {
-    // TODO: Add actual authentication logic
-    Get.offAll(const HomePage()); // ✅ GetX للتنقل
+    setState(() {
+      _emailError = Validators.validateEmail(_emailController.text);
+      _passwordError = Validators.validatePassword(_passwordController.text);
+    });
+
+    if (_emailError == null && _passwordError == null) {
+      final patient = Patient(
+        patientName: '',
+        patientAge: 0,
+        patientGender: '',
+        patientCity: '',
+        patientEmail: _emailController.text,
+        patientPassword: _passwordController.text,
+        patientMarried: false,
+        patientPhone: '',
+        patientImage: null,
+      );
+
+      // TODO: Send login request with patient.toLoginJson()
+      print('Login Data: ${patient.toLoginJson()}');
+
+      Get.offAll(const HomePage());
+    }
   }
 
   @override
@@ -37,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // ✅ اللوجو
+            // Logo
             RichText(
               text: TextSpan(
                 style: AppTextStyles.headlineLarge.copyWith(
@@ -58,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
 
             SizedBox(height: 20 * scale),
 
-            // ✅ الصورة
+            // Image
             Container(
               height: 220 * scale,
               width: 220 * scale,
@@ -77,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
 
             SizedBox(height: 30 * scale),
 
-            // ✅ الترحيب
+            // Welcome
             Text(
               "Welcome Back 👋",
               style: AppTextStyles.headlineMedium.copyWith(
@@ -98,25 +124,41 @@ class _LoginPageState extends State<LoginPage> {
 
             SizedBox(height: 40 * scale),
 
-            // ✅ حقول الإدخال
-            CustomInputField(
-              controller: _usernameController,
-              hint: "Username",
-              icon: Icons.person_outline,
+            // Email Field
+            _buildInputField(
+              controller: _emailController,
+              hint: "Email Address",
+              icon: Icons.email_outlined,
+              error: _emailError,
+              keyboardType: TextInputType.emailAddress,
+              onChanged: (value) {
+                setState(() {
+                  _emailError = Validators.validateEmail(value);
+                });
+              },
               scale: scale,
             ),
+
             SizedBox(height: 16 * scale),
-            CustomInputField(
+
+            // Password Field
+            _buildInputField(
               controller: _passwordController,
               hint: "Password",
               icon: Icons.lock_outline,
               isPassword: true,
+              error: _passwordError,
+              onChanged: (value) {
+                setState(() {
+                  _passwordError = Validators.validatePassword(value);
+                });
+              },
               scale: scale,
             ),
 
             SizedBox(height: 40 * scale),
 
-            // ✅ زر تسجيل الدخول
+            // Login Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -141,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
 
             SizedBox(height: 35 * scale),
 
-            // ✅ إنشاء حساب جديد
+            // Sign Up Link
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -153,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Get.to(const SignupPage()); // ✅ GetX للتنقل
+                    Get.to(const SignupPage());
                   },
                   child: Text(
                     "Sign Up",
@@ -171,9 +213,47 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    bool isPassword = false,
+    String? error,
+    TextInputType keyboardType = TextInputType.text,
+    required double scale,
+    Function(String)? onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+      CustomInputField(
+      controller: controller,
+      hint: hint,
+      icon: icon,
+      isPassword: isPassword,
+      hasError: error != null,
+      keyboardType: keyboardType,
+      onChanged: onChanged,
+      scale: scale,
+      ),
+        if (error != null)
+          Padding(
+            padding: EdgeInsets.only(left: 16 * scale, top: 4 * scale),
+            child: Text(
+              error,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.error,
+                fontSize: 11 * scale,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_colors.dart';
 
-// في ملف custom_input_field.dart
 class CustomInputField extends StatefulWidget {
   final TextEditingController controller;
   final String hint;
@@ -8,7 +8,8 @@ class CustomInputField extends StatefulWidget {
   final bool isPassword;
   final double scale;
   final bool hasError;
-  final TextInputType keyboardType; // إضافة
+  final TextInputType keyboardType;
+  final Function(String)? onChanged; // ✅ إضافة onChanged
 
   const CustomInputField({
     super.key,
@@ -18,7 +19,8 @@ class CustomInputField extends StatefulWidget {
     this.isPassword = false,
     this.scale = 1.0,
     this.hasError = false,
-    this.keyboardType = TextInputType.text, // قيمة افتراضية
+    this.keyboardType = TextInputType.text,
+    this.onChanged, // ✅ إضافة onChanged
   });
 
   @override
@@ -33,13 +35,13 @@ class _CustomInputFieldState extends State<CustomInputField> {
     return Container(
       decoration: BoxDecoration(
         color: widget.hasError
-            ? Colors.red.shade50
-            : Colors.teal.withOpacity(0.05),
+            ? AppColors.error.withOpacity(0.05)
+            : AppColors.primary.withOpacity(0.05),
         borderRadius: BorderRadius.circular(18 * widget.scale),
         border: Border.all(
           color: widget.hasError
-              ? Colors.red.shade300
-              : Colors.teal.withOpacity(0.3),
+              ? AppColors.error
+              : AppColors.primary.withOpacity(0.3),
           width: 1 * widget.scale,
         ),
       ),
@@ -47,34 +49,32 @@ class _CustomInputFieldState extends State<CustomInputField> {
         controller: widget.controller,
         obscureText: widget.isPassword ? _obscureText : false,
         keyboardType: widget.keyboardType,
-        // استخدام الـ keyboardType
+        onChanged: widget.onChanged, // ✅ إضافة onChanged هنا
         style: TextStyle(
           fontSize: 16 * widget.scale,
-          color: widget.hasError ? Colors.red.shade800 : Colors.teal.shade800,
+          color: widget.hasError ? AppColors.error : AppColors.primaryDark,
         ),
         decoration: InputDecoration(
           hintText: widget.hint,
           hintStyle: TextStyle(
             fontSize: 14 * widget.scale,
-            color: widget.hasError ? Colors.red.shade700 : Colors.grey.shade500,
+            color: widget.hasError ? AppColors.error : AppColors.grey,
           ),
           border: InputBorder.none,
           prefixIcon: Icon(
             widget.icon,
             size: 20 * widget.scale,
-            color: widget.hasError ? Colors.red.shade700 : Colors.teal.shade700,
+            color: widget.hasError ? AppColors.error : AppColors.primary,
           ),
           suffixIcon: widget.isPassword
               ? IconButton(
-                  icon: Icon(
-                    _obscureText ? Icons.visibility_off : Icons.visibility,
-                    size: 20 * widget.scale,
-                    color: widget.hasError
-                        ? Colors.red.shade700
-                        : Colors.grey.shade600,
-                  ),
-                  onPressed: () => setState(() => _obscureText = !_obscureText),
-                )
+            icon: Icon(
+              _obscureText ? Icons.visibility_off : Icons.visibility,
+              size: 20 * widget.scale,
+              color: widget.hasError ? AppColors.error : AppColors.grey,
+            ),
+            onPressed: () => setState(() => _obscureText = !_obscureText),
+          )
               : null,
           contentPadding: EdgeInsets.all(16 * widget.scale),
         ),
