@@ -7,7 +7,6 @@ import '../../../core/utils/responsive_utils.dart';
 import '../../../widgets/custom_input_field.dart';
 import '../home/home_page.dart';
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -115,31 +114,7 @@ class _LoginPageState extends State<LoginPage> {
               scale: scale,
             ),
 
-            SizedBox(height: 10 * scale),
-
-            // ✅ نسيت كلمة المرور
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  Get.snackbar(
-                    'Forgot Password',
-                    'Feature coming soon!',
-                    backgroundColor: AppColors.info.withOpacity(0.1),
-                    colorText: AppColors.info,
-                  );
-                },
-                child: Text(
-                  "Forgot password?",
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-
-            SizedBox(height: 30 * scale),
+            SizedBox(height: 40 * scale),
 
             // ✅ زر تسجيل الدخول
             SizedBox(

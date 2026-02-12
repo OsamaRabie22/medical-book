@@ -4,7 +4,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_styles.dart';
 import '../../core/utils/responsive_utils.dart';
 import '../../models/doctor_model.dart';
-import '../../states/appointment_state.dart'; // إضافة هذا الاستيراد
+import '../../states/appointment_state.dart';
 
 class DoctorCard extends StatefulWidget {
   final Doctor doctor;
@@ -66,7 +66,7 @@ class _DoctorCardState extends State<DoctorCard> {
                     children: [
                       Expanded(
                         child: Text(
-                          widget.doctor.name,
+                          "Dr. ${widget.doctor.name}", // إضافة Dr. هنا فقط للعرض
                           style: AppTextStyles.headlineSmall.copyWith(
                             color: AppColors.primaryDark,
                             fontSize: isTablet ? 19 * scale : 17 * scale,

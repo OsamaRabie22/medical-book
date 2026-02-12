@@ -308,7 +308,7 @@ class AppointmentsPageState extends State<AppointmentsPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              appointment.doctorName,
+                              "Dr. ${appointment.doctorName}", // إضافة Dr. هنا
                               style: AppTextStyles.headlineSmall.copyWith(
                                 fontSize: 16 * scale,
                                 fontWeight: FontWeight.bold,

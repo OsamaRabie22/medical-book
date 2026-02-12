@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 // List of dummy doctors
 List<Doctor> dummyDoctors = [
   Doctor(
-    name: "Dr. Osama Rabie",
+    name: "Osama Rabie", // إزالة Dr.
     specialty: "Dermatology",
     location: "Cairo – Maadi",
     contact: "01012345678",
@@ -14,10 +14,10 @@ List<Doctor> dummyDoctors = [
     "assets/photogrid.photocollagemaker.photoeditor.squarepic_202422121565198.png",
     availableTimes: ["Monday 9 AM - 12 PM", "Wednesday 2 PM - 5 PM"],
     consultationFee: 250.0,
-    isSaved: false, // Default isSaved to false
+    isSaved: false,
   ),
   Doctor(
-    name: "Dr. Sara Mohamed",
+    name: "Sara Mohamed", // إزالة Dr.
     specialty: "Dermatologist",
     location: "Cairo – Nasr City",
     contact: "01087654321",
@@ -28,7 +28,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Dr. Khaled Omar",
+    name: "Khaled Omar", // إزالة Dr.
     specialty: "Surgeon",
     location: "Alexandria",
     contact: "01011223344",
@@ -39,7 +39,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Dr. Ahmed Hassan",
+    name: "Ahmed Hassan", // إزالة Dr.
     specialty: "Orthopedic",
     location: "Cairo – Zamalek",
     contact: "01022334455",
@@ -50,7 +50,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Dr. Mona Samy",
+    name: "Mona Samy", // إزالة Dr.
     specialty: "Dentist",
     location: "Cairo – Heliopolis",
     contact: "01033445566",
@@ -61,7 +61,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Dr. Omar Ibrahim",
+    name: "Omar Ibrahim", // إزالة Dr.
     specialty: "Neurologist",
     location: "Cairo – Mohandessin",
     contact: "01044556677",
@@ -72,7 +72,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Dr. Tamer Ali",
+    name: "Tamer Ali", // إزالة Dr.
     specialty: "Pediatrician",
     location: "Cairo – Nasr City",
     contact: "01055667788",
@@ -83,7 +83,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Dr. Ahmed Zaki",
+    name: "Ahmed Zaki", // إزالة Dr.
     specialty: "Psychologist",
     location: "Cairo – Maadi",
     contact: "01066778899",
@@ -94,7 +94,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Dr. Yasser El-Feky",
+    name: "Yasser El-Feky", // إزالة Dr.
     specialty: "General Physician",
     location: "Cairo – Shobra",
     contact: "01077889900",
@@ -105,7 +105,7 @@ List<Doctor> dummyDoctors = [
     isSaved: true,
   ),
   Doctor(
-    name: "Dr. Nada Ahmed",
+    name: "Nada Ahmed", // إزالة Dr.
     specialty: "Gynaecologist",
     location: "Cairo – Heliopolis",
     contact: "01088990011",
@@ -115,14 +115,123 @@ List<Doctor> dummyDoctors = [
     consultationFee: 350.0,
     isSaved: false,
   ),
-  // أضف باقي الأطباء هنا لتصل إلى 20 دكتورًا...
+  // إضافة أطباء جدد ليصبح العدد 20
+  Doctor(
+    name: "Ali Mahmoud",
+    specialty: "Cardiologist",
+    location: "Cairo – Nasr City",
+    contact: "01099001122",
+    rating: 4.8,
+    image: "assets/images/doctors/Ali-Mahmoud.jpg",
+    availableTimes: ["Monday 8 AM - 12 PM", "Wednesday 2 PM - 6 PM"],
+    consultationFee: 400.0,
+    isSaved: false,
+  ),
+  Doctor(
+    name: "Fatma Salem",
+    specialty: "Pediatrician",
+    location: "Alexandria",
+    contact: "01000112233",
+    rating: 4.9,
+    image: "assets/images/doctors/Fatma-Salem.jpg",
+    availableTimes: ["Tuesday 9 AM - 1 PM", "Thursday 3 PM - 7 PM"],
+    consultationFee: 280.0,
+    isSaved: true,
+  ),
+  Doctor(
+    name: "Mahmoud Rashed",
+    specialty: "Orthopedic Surgeon",
+    location: "Cairo – Maadi",
+    contact: "01011223344",
+    rating: 4.7,
+    image: "assets/images/doctors/Mahmoud-Rashed.jpg",
+    availableTimes: ["Sunday 10 AM - 2 PM", "Friday 4 PM - 8 PM"],
+    consultationFee: 450.0,
+    isSaved: false,
+  ),
+  Doctor(
+    name: "Hana Omar",
+    specialty: "Dermatologist",
+    location: "Cairo – Heliopolis",
+    contact: "01022334455",
+    rating: 4.9,
+    image: "assets/images/doctors/Hana-Omar.jpg",
+    availableTimes: ["Monday 2 PM - 6 PM", "Thursday 9 AM - 1 PM"],
+    consultationFee: 320.0,
+    isSaved: false,
+  ),
+  Doctor(
+    name: "Karim Adel",
+    specialty: "Neurologist",
+    location: "Cairo – Zamalek",
+    contact: "01033445566",
+    rating: 4.8,
+    image: "assets/images/doctors/Karim-Adel.jpg",
+    availableTimes: ["Tuesday 10 AM - 2 PM", "Saturday 3 PM - 7 PM"],
+    consultationFee: 380.0,
+    isSaved: false,
+  ),
+  Doctor(
+    name: "Rania Sobhy",
+    specialty: "Gynecologist",
+    location: "Cairo – Mohandessin",
+    contact: "01044556677",
+    rating: 4.9,
+    image: "assets/images/doctors/Rania-Sobhy.jpg",
+    availableTimes: ["Wednesday 8 AM - 12 PM", "Friday 2 PM - 6 PM"],
+    consultationFee: 350.0,
+    isSaved: true,
+  ),
+  Doctor(
+    name: "Amr Walid",
+    specialty: "ENT Specialist",
+    location: "Cairo – Nasr City",
+    contact: "01055667788",
+    rating: 4.6,
+    image: "assets/images/doctors/Amr-Walid.jpg",
+    availableTimes: ["Monday 9 AM - 1 PM", "Thursday 4 PM - 8 PM"],
+    consultationFee: 300.0,
+    isSaved: false,
+  ),
+  Doctor(
+    name: "Dina Karam",
+    specialty: "Psychiatrist",
+    location: "Alexandria",
+    contact: "01066778899",
+    rating: 4.8,
+    image: "assets/images/doctors/Dina-Karam.jpg",
+    availableTimes: ["Tuesday 2 PM - 6 PM", "Sunday 10 AM - 2 PM"],
+    consultationFee: 400.0,
+    isSaved: false,
+  ),
+  Doctor(
+    name: "Sherif Nasser",
+    specialty: "General Surgeon",
+    location: "Cairo – Maadi",
+    contact: "01077889900",
+    rating: 4.7,
+    image: "assets/images/doctors/Sherif-Nasser.jpg",
+    availableTimes: ["Wednesday 9 AM - 1 PM", "Saturday 3 PM - 7 PM"],
+    consultationFee: 500.0,
+    isSaved: false,
+  ),
+  Doctor(
+    name: "Laila Mostafa",
+    specialty: "Dentist",
+    location: "Cairo – Heliopolis",
+    contact: "01088990011",
+    rating: 4.9,
+    image: "assets/images/doctors/Laila-Mostafa.jpg",
+    availableTimes: ["Monday 8 AM - 12 PM", "Friday 2 PM - 6 PM"],
+    consultationFee: 250.0,
+    isSaved: true,
+  ),
 ];
 
-// List of dummy bookings
-// List of dummy bookings
+// تحديث الـ bookings لاستخدام الأسماء الجديدة
 List<Booking> dummyBookings = [
   Booking(
-    doctorName: dummyDoctors[0].name,
+    doctorName: dummyDoctors[0].name, // Osama Rabie
     specialty: dummyDoctors[0].specialty,
     doctorImage: dummyDoctors[0].image,
     status: "Completed",
@@ -136,7 +245,7 @@ List<Booking> dummyBookings = [
     rating: dummyDoctors[0].rating,
   ),
   Booking(
-    doctorName: dummyDoctors[1].name,
+    doctorName: dummyDoctors[1].name, // Sara Mohamed
     specialty: dummyDoctors[1].specialty,
     doctorImage: dummyDoctors[1].image,
     status: "Pending",
@@ -150,7 +259,7 @@ List<Booking> dummyBookings = [
     rating: dummyDoctors[1].rating,
   ),
   Booking(
-    doctorName: dummyDoctors[2].name,
+    doctorName: dummyDoctors[2].name, // Khaled Omar
     specialty: dummyDoctors[2].specialty,
     doctorImage: dummyDoctors[2].image,
     status: "Completed",
@@ -164,10 +273,10 @@ List<Booking> dummyBookings = [
     rating: dummyDoctors[2].rating,
   ),
   Booking(
-    doctorName: dummyDoctors[3].name,
+    doctorName: dummyDoctors[3].name, // Ahmed Hassan
     specialty: dummyDoctors[3].specialty,
     doctorImage: dummyDoctors[3].image,
-    status: "Cancelled", // New booking with Cancelled status
+    status: "Cancelled",
     statusColor: Colors.red,
     statusBackground: Colors.red.shade100,
     date: "2023-12-15",
@@ -178,10 +287,10 @@ List<Booking> dummyBookings = [
     rating: dummyDoctors[3].rating,
   ),
   Booking(
-    doctorName: dummyDoctors[4].name,
+    doctorName: dummyDoctors[4].name, // Mona Samy
     specialty: dummyDoctors[4].specialty,
     doctorImage: dummyDoctors[4].image,
-    status: "Cancelled", // New booking with Cancelled status
+    status: "Cancelled",
     statusColor: Colors.red,
     statusBackground: Colors.red.shade100,
     date: "2023-12-16",
@@ -193,20 +302,18 @@ List<Booking> dummyBookings = [
   ),
 ];
 
-
 // List of dummy payment confirmations
 List<PaymentConfirmation> dummyPaymentConfirmations = [
   PaymentConfirmation(
-    booking: dummyBookings[0], // Link to the first booking
+    booking: dummyBookings[0],
     status: "Confirmed",
   ),
   PaymentConfirmation(
-    booking: dummyBookings[1], // Link to the second booking
+    booking: dummyBookings[1],
     status: "Pending",
   ),
   PaymentConfirmation(
-    booking: dummyBookings[2], // Link to the third booking
+    booking: dummyBookings[2],
     status: "Completed",
   ),
-  // أضف المزيد من تأكيدات الدفع حسب الحاجة...
 ];

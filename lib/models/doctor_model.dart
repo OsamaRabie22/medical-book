@@ -51,6 +51,18 @@ class Doctor {
       isSaved: isSaved ?? this.isSaved,
     );
   }
+  String get nameWithoutTitle {
+    return name.replaceAll(RegExp(r'^Dr\.\s*', caseSensitive: false), '');
+  }
+
+  // إضافة دالة للبحث في جميع الحقول
+  bool matchesSearch(String query) {
+    final lowerQuery = query.toLowerCase();
+    return name.toLowerCase().contains(lowerQuery) ||
+        nameWithoutTitle.toLowerCase().contains(lowerQuery) ||
+        specialty.toLowerCase().contains(lowerQuery) ||
+        location.toLowerCase().contains(lowerQuery);
+  }
 }
 
 

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_styles.dart';
 import '../../core/utils/responsive_utils.dart';
-import '../../models/doctor_model.dart';
 import 'booking_page.dart';
 import 'doctor_card.dart';
-import '../../data/dummy_data.dart'; // تأكد من إضافة هذا الـ import
+import '../../states/appointment_state.dart'; // للوصول إلى DoctorsProvider
 
 class DoctorsPage extends StatefulWidget {
   const DoctorsPage({super.key});
@@ -16,33 +16,27 @@ class DoctorsPage extends StatefulWidget {
 
 class _DoctorsPageState extends State<DoctorsPage> {
   TextEditingController searchController = TextEditingController();
-  List<Doctor> doctors = dummyDoctors; // استخدمنا الـ dummyDoctors هنا
-
-  List<Doctor> filteredDoctors = [];
 
   @override
   void initState() {
     super.initState();
-    filteredDoctors = List.from(doctors);
-  }
-
-  void filterDoctors(String query) {
-    setState(() {
-      if (query.isEmpty) {
-        filteredDoctors = List.from(doctors);
-      } else {
-        filteredDoctors = doctors.where((doctor) {
-          final name = doctor.name.toLowerCase();
-          final specialty = doctor.specialty.toLowerCase();
-          final searchLower = query.toLowerCase();
-          return name.contains(searchLower) || specialty.contains(searchLower);
-        }).toList();
-      }
+    // عند فتح الصفحة، امسح أي بحث سابق
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<DoctorsProvider>(context, listen: false);
+      provider.searchDoctors('');
     });
   }
 
   @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<DoctorsProvider>(context);
+    final filteredDoctors = provider.filteredDoctors;
     final scale = ResponsiveUtils.getScale(context);
     final isTablet = ResponsiveUtils.isTablet(context);
 
@@ -61,7 +55,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
       ),
       body: Column(
         children: [
-          // Search Bar
+          // Search Bar باستخدام Provider
           Padding(
             padding: EdgeInsets.all(16 * scale),
             child: Container(
@@ -79,7 +73,9 @@ class _DoctorsPageState extends State<DoctorsPage> {
               ),
               child: TextField(
                 controller: searchController,
-                onChanged: filterDoctors,
+                onChanged: (value) {
+                  provider.searchDoctors(value);
+                },
                 decoration: InputDecoration(
                   hintText: "Search for a doctor or specialty",
                   border: InputBorder.none,
@@ -99,13 +95,31 @@ class _DoctorsPageState extends State<DoctorsPage> {
 
           // نتائج البحث
           Expanded(
-            child: filteredDoctors.isEmpty
+            child: searchController.text.isNotEmpty && filteredDoctors.isEmpty
                 ? Center(
-              child: Text(
-                "No doctors found",
-                style: AppTextStyles.bodyLarge.copyWith(
-                  color: AppColors.grey,
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.search_off,
+                    size: 60 * scale,
+                    color: AppColors.grey,
+                  ),
+                  SizedBox(height: 16 * scale),
+                  Text(
+                    "No doctors found",
+                    style: AppTextStyles.headlineSmall.copyWith(
+                      color: AppColors.grey,
+                    ),
+                  ),
+                  SizedBox(height: 8 * scale),
+                  Text(
+                    "Try a different search term",
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.grey,
+                    ),
+                  ),
+                ],
               ),
             )
                 : ListView.builder(
@@ -116,7 +130,7 @@ class _DoctorsPageState extends State<DoctorsPage> {
                 return Padding(
                   padding: EdgeInsets.only(bottom: 12 * scale),
                   child: DoctorCard(
-                    doctor: doctor, // هنا تم التعديل لاستقبال Doctor
+                    doctor: doctor,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -125,6 +139,9 @@ class _DoctorsPageState extends State<DoctorsPage> {
                             doctorName: doctor.name,
                             specialty: doctor.specialty,
                             doctorImage: doctor.image,
+                            rating: doctor.rating,
+                            location: doctor.location,
+                            consultationFee: doctor.consultationFee,
                           ),
                         ),
                       );
@@ -139,4 +156,3 @@ class _DoctorsPageState extends State<DoctorsPage> {
     );
   }
 }
-

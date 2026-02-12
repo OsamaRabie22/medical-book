@@ -104,7 +104,7 @@ class PaymentConfirmationPage extends StatelessWidget {
                     Column(
                       children: [
                         Text(
-                          doctorName,
+                          "Dr. ${doctorName}", // إضافة Dr. هنا
                           style: AppTextStyles.headlineSmall.copyWith(
                             fontSize: isTablet ? 22 * scale : 20 * scale,
                             fontWeight: FontWeight.bold,

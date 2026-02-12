@@ -175,7 +175,7 @@ class TopDoctorsSection extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                doctor.name,
+                                "Dr. ${doctor.name}", // إضافة Dr. هنا
                                 style: AppTextStyles.bodyLarge.copyWith(
                                   fontWeight: FontWeight.bold,
                                   fontSize: isTablet ? 16 * scale : 14 * scale,

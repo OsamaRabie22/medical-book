@@ -146,9 +146,9 @@ class _BookingPageState extends State<BookingPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.doctorName,
-                        style: AppTextStyles.headlineSmall.copyWith(
-                          fontSize: isTablet ? 20 * scale : 18 * scale,
+                        "Dr. ${widget.doctorName}", // إضافة Dr. هنا
+                        style: AppTextStyles.headlineMedium.copyWith(
+                          fontSize: isTablet ? 28 * scale : 26 * scale,
                           fontWeight: FontWeight.bold,
                           color: AppColors.primaryDark,
                         ),
@@ -756,7 +756,7 @@ class _BookingPageState extends State<BookingPage> {
           ),
         ),
         content: Text(
-          "You are about to book an appointment with ${widget.doctorName} "
+          "You are about to book an appointment with Dr. ${widget.doctorName} "
               "on ${selectedDateText ?? selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year} "
               "at ${selectedTimeSlot} for EGP ${widget.consultationFee.toStringAsFixed(0)}",
           style: AppTextStyles.bodyMedium,
