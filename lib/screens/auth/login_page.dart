@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:medical_book/screens/auth/signup_page.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_styles.dart';
 import '../../../core/utils/responsive_utils.dart';
 import '../../../core/utils/validators.dart';
-import '../../../models/patient_model.dart';
-import '../../../widgets/custom_input_field.dart';
-import '../home/home_page.dart';
-import 'signup_page.dart';
+import '../../../services/api_service.dart'; // استيراد الـ ApiService
+import '../../../screens/home/home_page.dart';
+import '../../widgets/custom_input_field.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,29 +23,43 @@ class _LoginPageState extends State<LoginPage> {
   String? _emailError;
   String? _passwordError;
 
-  void _login() {
+  final ApiService _apiService = ApiService(); // Instantiate the ApiService
+
+  // تسجيل الدخول
+  Future<void> _login() async {
     setState(() {
       _emailError = Validators.validateEmail(_emailController.text);
       _passwordError = Validators.validatePassword(_passwordController.text);
     });
 
     if (_emailError == null && _passwordError == null) {
-      final patient = Patient(
-        patientName: '',
-        patientAge: 0,
-        patientGender: '',
-        patientCity: '',
-        patientEmail: _emailController.text,
-        patientPassword: _passwordController.text,
-        patientMarried: false,
-        patientPhone: '',
-        patientImage: null,
+      final loginData = {
+        'patient_email': _emailController.text,
+        'patient_password': _passwordController.text,
+      };
+
+      try {
+        final response = await _apiService.loginPatient(loginData);
+        if (response.statusCode == 200) {
+          // إذا كانت الاستجابة ناجحة
+          print("Login successful");
+          // انتقل إلى الصفحة الرئيسية بعد تسجيل الدخول الناجح
+          Get.offAll(const HomePage());
+        } else {
+          Get.snackbar("Error", "Login failed. Please try again.");
+        }
+      } catch (e) {
+        print("Error during login: $e");
+        Get.snackbar("Error", "An error occurred during login.");
+      }
+    } else {
+      Get.snackbar(
+        'Validation Error',
+        'Please fix all errors before proceeding',
+        backgroundColor: AppColors.error.withOpacity(0.1),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
       );
-
-      // TODO: Send login request with patient.toLoginJson()
-      print('Login Data: ${patient.toLoginJson()}');
-
-      Get.offAll(const HomePage());
     }
   }
 
@@ -103,7 +117,6 @@ class _LoginPageState extends State<LoginPage> {
 
             SizedBox(height: 30 * scale),
 
-            // Welcome
             Text(
               "Welcome Back 👋",
               style: AppTextStyles.headlineMedium.copyWith(
@@ -226,16 +239,16 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-      CustomInputField(
-      controller: controller,
-      hint: hint,
-      icon: icon,
-      isPassword: isPassword,
-      hasError: error != null,
-      keyboardType: keyboardType,
-      onChanged: onChanged,
-      scale: scale,
-      ),
+        CustomInputField(
+          controller: controller,
+          hint: hint,
+          icon: icon,
+          isPassword: isPassword,
+          hasError: error != null,
+          keyboardType: keyboardType,
+          onChanged: onChanged,
+          scale: scale,
+        ),
         if (error != null)
           Padding(
             padding: EdgeInsets.only(left: 16 * scale, top: 4 * scale),
