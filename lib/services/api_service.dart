@@ -39,4 +39,22 @@ class ApiService {
       throw Exception('Failed to create sick record: $e');
     }
   }
+  // ✅ إضافة في ApiService
+  // في lib/services/api_service.dart
+
+  Future<Response> getPatientProfile(int patientId) async {
+    try {
+      print("🌐 API CALL: GET PatientProfile/$patientId");
+      final response = await _dio.get('PatientProfile/$patientId');
+      print("🌐 API RESPONSE: ${response.statusCode}");
+      return response;
+    } catch (e) {
+      print("💥 API ERROR: $e");
+      if (e is DioException) {
+        print("💥 DioException Type: ${e.type}");
+        print("💥 DioException Response: ${e.response?.data}");
+      }
+      throw Exception('Failed to fetch patient profile: $e');
+    }
+  }
 }

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:medical_book/screens/auth/signup_page.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_styles.dart';
 import '../../../core/utils/responsive_utils.dart';
 import '../../../core/utils/validators.dart';
 import '../../../services/api_service.dart'; // استيراد الـ ApiService
 import '../../../screens/home/home_page.dart';
+import '../../providers/patient_provider.dart';
 import '../../widgets/custom_input_field.dart';
 
 class LoginPage extends StatefulWidget {
@@ -26,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   final ApiService _apiService = ApiService(); // Instantiate the ApiService
 
   // تسجيل الدخول
+  // ✅ تعديل دالة Login
   Future<void> _login() async {
     setState(() {
       _emailError = Validators.validateEmail(_emailController.text);
@@ -33,33 +36,31 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (_emailError == null && _passwordError == null) {
-      final loginData = {
-        'patient_email': _emailController.text,
-        'patient_password': _passwordController.text,
-      };
+      final patientProvider = Provider.of<PatientProvider>(context, listen: false);
 
-      try {
-        final response = await _apiService.loginPatient(loginData);
-        if (response.statusCode == 200) {
-          // إذا كانت الاستجابة ناجحة
-          print("Login successful");
-          // انتقل إلى الصفحة الرئيسية بعد تسجيل الدخول الناجح
-          Get.offAll(const HomePage());
-        } else {
-          Get.snackbar("Error", "Login failed. Please try again.");
-        }
-      } catch (e) {
-        print("Error during login: $e");
-        Get.snackbar("Error", "An error occurred during login.");
-      }
-    } else {
-      Get.snackbar(
-        'Validation Error',
-        'Please fix all errors before proceeding',
-        backgroundColor: AppColors.error.withOpacity(0.1),
-        colorText: AppColors.error,
-        snackPosition: SnackPosition.BOTTOM,
+      final success = await patientProvider.loginAndFetchPatient(
+        _emailController.text,
+        _passwordController.text,
       );
+
+      if (success) {
+        Get.snackbar(
+          "Success",
+          "Welcome back!",
+          backgroundColor: AppColors.success.withOpacity(0.1),
+          colorText: AppColors.success,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        Get.offAll(const HomePage());
+      } else {
+        Get.snackbar(
+          "Error",
+          patientProvider.error ?? "Login failed",
+          backgroundColor: AppColors.error.withOpacity(0.1),
+          colorText: AppColors.error,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
     }
   }
 

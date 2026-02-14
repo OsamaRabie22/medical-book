@@ -72,7 +72,8 @@ class Patient {
       patientHeight: patientHeight ?? this.patientHeight,
       patientWeight: patientWeight ?? this.patientWeight,
       patientBloodType: patientBloodType ?? this.patientBloodType,
-      patientChronicDiseases: patientChronicDiseases ?? this.patientChronicDiseases,
+      patientChronicDiseases:
+          patientChronicDiseases ?? this.patientChronicDiseases,
       patientAllergies: patientAllergies ?? this.patientAllergies,
       patientMedications: patientMedications ?? this.patientMedications,
       patientVaccinations: patientVaccinations ?? this.patientVaccinations,
@@ -96,19 +97,44 @@ class Patient {
     };
   }
 
-  // Create from JSON (for login response)
-  factory Patient.fromJson(Map<String, dynamic> json) {
+  factory Patient.fromJsonProfile(Map<String, dynamic> json) {
+    print("🟢 Parsing profile JSON: $json");
+
     return Patient(
-      patientId: json['patient_id'], // ✅ إضافة هذا
-      patientName: json['patient_name'],
-      patientAge: json['patient_age'],
-      patientGender: json['patient_gender'],
-      patientCity: json['patient_city'],
-      patientEmail: json['patient_email'],
-      patientPassword: json['patient_password'],
-      patientMarried: json['patient_married'],
-      patientPhone: json['patient_phone'],
-      patientImage: json['patient_image'],
+      patientId: json['patientId'],
+      patientName: json['patientName'] ?? 'Unknown',
+      patientAge: json['patientAge'] ?? 0,
+      // لو null، استخدم 0
+      patientGender: json['patientGender'] ?? 'Not specified',
+      // لو null، استخدم قيمة افتراضية
+      patientCity: json['patientCity'] ?? '',
+      patientEmail: json['patientEmail'] ?? '',
+      patientMarried: json['patientMarried'] ?? false,
+      patientPhone: json['patientPhone'] ?? '',
+      patientImage: json['patientImage'],
+
+      // Medical info (افتراضي null)
+      patientHeight: json['patientHeight'],
+      patientWeight: json['patientWeight'],
+      patientBloodType: json['patientBloodType'],
+      patientChronicDiseases: json['patientChronicDiseases'] != null
+          ? List<String>.from(json['patientChronicDiseases'])
+          : null,
+      patientAllergies: json['patientAllergies'] != null
+          ? List<String>.from(json['patientAllergies'])
+          : null,
+      patientMedications: json['patientMedications'] != null
+          ? List<String>.from(json['patientMedications'])
+          : null,
+      patientVaccinations: json['patientVaccinations'] != null
+          ? List<String>.from(json['patientVaccinations'])
+          : null,
+      patientSurgeries: json['patientSurgeries'] != null
+          ? List<Map<String, dynamic>>.from(json['patientSurgeries'])
+          : null,
+      patientFamilyHistory: json['patientFamilyHistory'] != null
+          ? List<Map<String, dynamic>>.from(json['patientFamilyHistory'])
+          : null,
     );
   }
 }

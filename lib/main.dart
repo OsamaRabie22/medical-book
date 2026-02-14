@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:medical_book/providers/patient_provider.dart';
 import 'package:medical_book/states/appointment_state.dart';
 import 'package:provider/provider.dart';
 import 'core/constants/app_colors.dart';
 import 'core/constants/app_styles.dart';
 import 'screens/intro/welcome_screen.dart';
+import 'screens/home/home_page.dart'; // ✅ استيراد HomePage
+import 'screens/auth/login_page.dart'; // ✅ استيراد LoginPage
+import 'screens/auth/signup_page.dart'; // ✅ استيراد SignupPage
 
 void main() {
   runApp(const MyApp());
@@ -17,10 +21,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => DoctorsProvider(),
-        ),
-        // يمكن إضافة providers أخرى هنا في المستقبل
+        ChangeNotifierProvider(create: (_) => DoctorsProvider()),
+        ChangeNotifierProvider(create: (_) => PatientProvider()),
       ],
       child: Builder(
         builder: (context) {
@@ -73,12 +75,19 @@ class MyApp extends StatelessWidget {
                 contentPadding: const EdgeInsets.all(16),
               ),
             ),
-            home: const WelcomeScreen(),
+            // ✅ تعريف routes
+            getPages: [
+              GetPage(name: '/', page: () => const WelcomeScreen()),
+              GetPage(name: '/login', page: () => const LoginPage()),
+              GetPage(name: '/signup', page: () => const SignupPage()),
+              GetPage(name: '/home', page: () => const HomePage()),
+            ],
+            initialRoute: '/',
             debugShowCheckedModeBanner: false,
             builder: (context, child) {
               return MediaQuery(
                 data: MediaQuery.of(context).copyWith(
-                  textScaleFactor: 1.0, // منع تكبير النص
+                  textScaleFactor: 1.0,
                 ),
                 child: child!,
               );
