@@ -11,7 +11,7 @@ import '../../widgets/doctor_card.dart';
 import '../../data/dummy_data.dart';
 
 class AppointmentsPageState extends State<AppointmentsPage> {
-  int _selectedTab = 0; // 0: Saved, 1: Upcoming, 2: Completed, 3: Cancelled
+  int _selectedTab = 0; // 0: Saved, 1: Booked, 2: Completed, 3: Cancelled
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,7 @@ class AppointmentsPageState extends State<AppointmentsPage> {
             child: Row(
               children: [
                 _buildTabButton("Saved", 0, scale, isTablet),
-                _buildTabButton("Upcoming", 1, scale, isTablet),
+                _buildTabButton("Booked", 1, scale, isTablet),
                 _buildTabButton("Completed", 2, scale, isTablet),
                 _buildTabButton("Cancelled", 3, scale, isTablet),
               ],
@@ -100,9 +100,9 @@ class AppointmentsPageState extends State<AppointmentsPage> {
     switch (_selectedTab) {
       case 0: // Saved
         return _buildSavedTab(doctorsProvider, scale, isTablet);
-      case 1: // Upcoming
+      case 1: // Booked
         return _buildAppointmentsTab(
-          dummyBookings.where((booking) => booking.status == 'Upcoming').toList(),
+          dummyBookings.where((booking) => booking.status == 'Booked').toList(),
           scale,
           isTablet,
         );
@@ -223,7 +223,7 @@ class AppointmentsPageState extends State<AppointmentsPage> {
                   SizedBox(height: 16 * scale),
                   Text(
                     _selectedTab == 1
-                        ? "No upcoming appointments"
+                        ? "No Booked appointments"
                         : _selectedTab == 2
                         ? "No completed appointments"
                         : "No cancelled appointments",
@@ -421,7 +421,7 @@ class AppointmentsPageState extends State<AppointmentsPage> {
                     ),
                   ],
 
-                  // Previous Diagnoses for Upcoming appointments
+                  // Previous Diagnoses for Booked appointments
                   if (_selectedTab == 1 && appointment.previousDiagnoses != null && appointment.previousDiagnoses!.isNotEmpty) ...[
                     SizedBox(height: 16 * scale),
                     Container(
@@ -482,7 +482,7 @@ class AppointmentsPageState extends State<AppointmentsPage> {
                     ),
                   ],
 
-                  // Cancel button for Upcoming appointments
+                  // Cancel button for Booked appointments
                   if (_selectedTab == 1) ...[
                     SizedBox(height: 16 * scale),
                     Divider(color: AppColors.greyLight, thickness: 1),
