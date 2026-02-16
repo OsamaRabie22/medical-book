@@ -246,67 +246,31 @@ class _SignupPageState extends State<SignupPage> {
         int? patientId;
 
         if (response.data is Map) {
-          // جرب كل الطرق الممكنة
-          patientId = response.data['patientId'] ??
-              response.data['patient_id'] ??
-              response.data['id'] ??
-              response.data['data']?['patientId'] ??
-              response.data['data']?['patient_id'];
+          // البيانات جاية في response.data['data']['patient']['id']
+          if (response.data['data'] != null &&
+              response.data['data']['patient'] != null) {
+            patientId = response.data['data']['patient']['id'];
+          }
         }
 
-        print("✅ Extracted patientId: $patientId");
+        print("Extracted patientId: $patientId");
 
-        if (patientId != null) {
-          // ✅ إنشاء Patient object كامل
-          final completePatient = Patient(
-            patientId: patientId,
-            patientName: _nameController.text,
-            patientAge: Validators.calculateAge(_selectedDate!),
-            patientGender: Validators.formatGenderForApi(_selectedGender!),
-            patientCity: _selectedCity!,
-            patientEmail: _emailController.text,
-            patientPassword: _passwordController.text,
-            patientMarried: _isMarried,
-            patientPhone: _phoneController.text,
-            birthDate: _selectedDate!.toIso8601String(),
-          );
+        // ✅ استخدم patientId الفعلي مش 0
+        final completePatient = Patient(
+          patientId: patientId, // مش patientId ?? 0
+          patientName: _nameController.text,
+          patientAge: Validators.calculateAge(_selectedDate!),
+          patientGender: Validators.formatGenderForApi(_selectedGender!),
+          patientCity: _selectedCity!,
+          patientEmail: _emailController.text,
+          patientPassword: _passwordController.text,
+          patientMarried: _isMarried,
+          patientPhone: _phoneController.text,
+          patientImage: null,
+          birthDate: _selectedDate!.toIso8601String(),
+        );
 
-          // ✅✅✅ حفظ البيانات في Provider
-          final patientProvider =
-              Provider.of<PatientProvider>(context, listen: false);
-          patientProvider.updatePatient(completePatient);
-
-          print("✅ Patient saved to Provider:");
-          print("   - ID: $patientId");
-          print("   - Name: ${_nameController.text}");
-          print("   - Email: ${_emailController.text}");
-
-          // ✅ روح على MedicalInfoPage
-          Get.off(() => MedicalInfoPage(patient: completePatient));
-        } else {
-          print("⚠️ No patientId in response, using temporary data");
-
-          // لو مافيش ID، استخدم بيانات مؤقتة
-          final tempPatient = Patient(
-            patientId: 0,
-            // temporary
-            patientName: _nameController.text,
-            patientAge: Validators.calculateAge(_selectedDate!),
-            patientGender: Validators.formatGenderForApi(_selectedGender!),
-            patientCity: _selectedCity!,
-            patientEmail: _emailController.text,
-            patientPassword: _passwordController.text,
-            patientMarried: _isMarried,
-            patientPhone: _phoneController.text,
-          );
-
-          // ✅ حفظ البيانات المؤقتة
-          final patientProvider =
-              Provider.of<PatientProvider>(context, listen: false);
-          patientProvider.updatePatient(tempPatient);
-
-          Get.off(() => MedicalInfoPage(patient: tempPatient));
-        }
+        Get.off(() => MedicalInfoPage(patient: completePatient));
       } else {
         Get.snackbar(
           'Registration Failed',

@@ -10,34 +10,36 @@ class ApiService {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'ngrok-skip-browser-warning': 'true', // ✅ مهم جداً لـ ngrok
+        'User-Agent': 'MedicalBook/1.0', // ✅ ضيف ده كمان
       },
     ),
   )..interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          print("🔵 REQUEST[${options.method}] => ${options.path}");
-          print("🔵 Headers: ${options.headers}");
-          print("🔵 Data: ${options.data}");
-          return handler.next(options);
-        },
-        onResponse: (response, handler) {
-          print("🟢 RESPONSE[${response.statusCode}]");
-          print("🟢 Data: ${response.data}");
-          return handler.next(response);
-        },
-        onError: (DioException e, handler) {
-          print("🔴 ERROR[${e.response?.statusCode}]");
-          print("🔴 Response: ${e.response?.data}");
-          return handler.next(e);
-        },
-      ),
-    );
+    InterceptorsWrapper(
+      onRequest: (options, handler) {
+        print("🔵 REQUEST[${options.method}] => ${options.path}");
+        print("🔵 Headers: ${options.headers}");
+        print("🔵 Data: ${options.data}");
+        return handler.next(options);
+      },
+      onResponse: (response, handler) {
+        print("🟢 RESPONSE[${response.statusCode}]");
+        print("🟢 Data: ${response.data}");
+        return handler.next(response);
+      },
+      onError: (DioException e, handler) {
+        print("🔴 ERROR[${e.response?.statusCode}]");
+        print("🔴 Response: ${e.response?.data}");
+        return handler.next(e);
+      },
+    ),
+  );
 
-  // ✅ محاولة 1: JSON (اللي جربناه)
+  // ✅ تسجيل مستخدم جديد
   Future<Response> registerPatient(Map<String, dynamic> patientData) async {
     try {
       print("==========================================");
-      print("📤 Attempt 1: Sending as JSON");
+      print("📤 Registering patient");
       print("📤 Data: $patientData");
       print("==========================================");
 
@@ -53,23 +55,16 @@ class ApiService {
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         print("⚠️ JSON failed with 400, trying FormData...");
-
-        // ✅ محاولة 2: FormData
         return await _registerWithFormData(patientData);
       }
       rethrow;
     }
   }
 
-  // ✅ محاولة 2: إرسال البيانات كـ FormData
   Future<Response> _registerWithFormData(
       Map<String, dynamic> patientData) async {
     try {
-      print("==========================================");
       print("📤 Attempt 2: Sending as FormData");
-      print("📤 Data: $patientData");
-      print("==========================================");
-
       final formData = FormData.fromMap(patientData);
 
       final response = await _dio.post(
@@ -98,16 +93,30 @@ class ApiService {
     }
   }
 
+  // ✅ إنشاء sick record
   Future<Response> createSickRecord(Map<String, dynamic> sickRecordData) async {
     try {
-      final response =
-          await _dio.post('patient/sick-record', data: sickRecordData);
+      print("==========================================");
+      print("📤 Creating sick record");
+      print("📤 Data: $sickRecordData");
+      print("==========================================");
+
+      final response = await _dio.post('patient/sick-record', data: sickRecordData);
+
+      print("✅ Sick record created: ${response.statusCode}");
       return response;
+    } on DioException catch (e) {
+      print("❌ Sick record creation failed");
+      print("❌ Status: ${e.response?.statusCode}");
+      print("❌ Response: ${e.response?.data}");
+      rethrow;
     } catch (e) {
+      print("❌ Sick record error: $e");
       throw Exception('Failed to create sick record: $e');
     }
   }
 
+  // جلب بيانات المريض
   Future<Response> getPatientProfile(int patientId) async {
     try {
       print("🌐 API CALL: GET PatientProfile/$patientId");
