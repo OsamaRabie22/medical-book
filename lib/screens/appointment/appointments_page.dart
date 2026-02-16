@@ -11,7 +11,7 @@ import '../../widgets/doctor_card.dart';
 import '../../data/dummy_data.dart';
 
 class AppointmentsPageState extends State<AppointmentsPage> {
-  int _selectedTab = 0; // 0: Saved, 1: Completed, 2: Cancelled
+  int _selectedTab = 0; // 0: Saved, 1: Upcoming, 2: Completed, 3: Cancelled
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class AppointmentsPageState extends State<AppointmentsPage> {
       ),
       body: Column(
         children: [
-          // Tab Bar
+          // Tab Bar (4 tabs)
           Container(
             margin: EdgeInsets.all(16 * scale),
             height: 50 * scale,
@@ -53,12 +53,12 @@ class AppointmentsPageState extends State<AppointmentsPage> {
             child: Row(
               children: [
                 _buildTabButton("Saved", 0, scale, isTablet),
-                _buildTabButton("Completed", 1, scale, isTablet),
-                _buildTabButton("Cancelled", 2, scale, isTablet),
+                _buildTabButton("Upcoming", 1, scale, isTablet),
+                _buildTabButton("Completed", 2, scale, isTablet),
+                _buildTabButton("Cancelled", 3, scale, isTablet),
               ],
             ),
           ),
-          // Content for the selected tab
           Expanded(
             child: _buildCurrentTabContent(doctorsProvider, scale, isTablet),
           ),
@@ -100,13 +100,19 @@ class AppointmentsPageState extends State<AppointmentsPage> {
     switch (_selectedTab) {
       case 0: // Saved
         return _buildSavedTab(doctorsProvider, scale, isTablet);
-      case 1: // Completed
+      case 1: // Upcoming
+        return _buildAppointmentsTab(
+          dummyBookings.where((booking) => booking.status == 'Upcoming').toList(),
+          scale,
+          isTablet,
+        );
+      case 2: // Completed
         return _buildAppointmentsTab(
           dummyBookings.where((booking) => booking.status == 'Completed').toList(),
           scale,
           isTablet,
         );
-      case 2: // Cancelled
+      case 3: // Cancelled
         return _buildAppointmentsTab(
           dummyBookings.where((booking) => booking.status == 'Cancelled').toList(),
           scale,
@@ -206,13 +212,21 @@ class AppointmentsPageState extends State<AppointmentsPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    _selectedTab == 1 ? Icons.check_circle_outline : Icons.cancel_outlined,
+                    _selectedTab == 1
+                        ? Icons.upcoming
+                        : _selectedTab == 2
+                        ? Icons.check_circle_outline
+                        : Icons.cancel_outlined,
                     size: 60 * scale,
                     color: AppColors.grey,
                   ),
                   SizedBox(height: 16 * scale),
                   Text(
-                    _selectedTab == 1 ? "No completed appointments" : "No cancelled appointments",
+                    _selectedTab == 1
+                        ? "No upcoming appointments"
+                        : _selectedTab == 2
+                        ? "No completed appointments"
+                        : "No cancelled appointments",
                     style: AppTextStyles.headlineSmall.copyWith(
                       color: AppColors.grey,
                     ),
@@ -228,7 +242,7 @@ class AppointmentsPageState extends State<AppointmentsPage> {
   Widget _buildAppointmentCard(Booking appointment, double scale, bool isTablet) {
     return GestureDetector(
       onTap: () {
-        if (_selectedTab == 1) {
+        if (_selectedTab == 2) {
           _navigateToBookingPage(appointment);
         }
       },
@@ -247,6 +261,7 @@ class AppointmentsPageState extends State<AppointmentsPage> {
         ),
         child: Column(
           children: [
+            // Status Header
             Container(
               padding: EdgeInsets.all(16 * scale),
               decoration: BoxDecoration(
@@ -277,7 +292,8 @@ class AppointmentsPageState extends State<AppointmentsPage> {
                       ),
                     ),
                   ),
-                  if (appointment.isSaved)
+                  // ✅ شيلنا علامة الـ save من Cancelled
+                  if (_selectedTab != 3 && appointment.isSaved) // ← هنا التغيير
                     Icon(
                       Icons.bookmark,
                       color: AppColors.primary,
@@ -286,11 +302,14 @@ class AppointmentsPageState extends State<AppointmentsPage> {
                 ],
               ),
             ),
+
+            // Main Content
             Padding(
               padding: EdgeInsets.all(16 * scale),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Doctor Info
                   Row(
                     children: [
                       ClipRRect(
@@ -308,7 +327,9 @@ class AppointmentsPageState extends State<AppointmentsPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Dr. ${appointment.doctorName}", // إضافة Dr. هنا
+                              appointment.doctorName.startsWith('Dr.')
+                                  ? appointment.doctorName
+                                  : "Dr. ${appointment.doctorName}",
                               style: AppTextStyles.headlineSmall.copyWith(
                                 fontSize: 16 * scale,
                                 fontWeight: FontWeight.bold,
@@ -348,11 +369,177 @@ class AppointmentsPageState extends State<AppointmentsPage> {
                       ),
                     ],
                   ),
+
                   SizedBox(height: 16 * scale),
+
+                  // Details
                   _buildDetailRow("Date & Time", "${appointment.date} • ${appointment.time}", scale, isTablet),
                   _buildDetailRow("Location", appointment.location, scale, isTablet),
                   _buildDetailRow("Fee", "EGP ${appointment.consultationFee.toStringAsFixed(0)}", scale, isTablet),
-                  if (_selectedTab == 2) ...[
+
+                  // Diagnosis for Completed appointments
+                  if (_selectedTab == 2 && appointment.diagnosis != null) ...[
+                    SizedBox(height: 16 * scale),
+                    Container(
+                      padding: EdgeInsets.all(12 * scale),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(8 * scale),
+                        border: Border.all(
+                          color: AppColors.success.withOpacity(0.3),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.medical_information,
+                                color: AppColors.success,
+                                size: 18 * scale,
+                              ),
+                              SizedBox(width: 8 * scale),
+                              Text(
+                                "Diagnosis",
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.success,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 4 * scale),
+                          Text(
+                            appointment.diagnosis!,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              fontSize: 14 * scale,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  // Previous Diagnoses for Upcoming appointments
+                  if (_selectedTab == 1 && appointment.previousDiagnoses != null && appointment.previousDiagnoses!.isNotEmpty) ...[
+                    SizedBox(height: 16 * scale),
+                    Container(
+                      padding: EdgeInsets.all(12 * scale),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(8 * scale),
+                        border: Border.all(
+                          color: AppColors.primary.withOpacity(0.3),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.history,
+                                color: AppColors.primary,
+                                size: 18 * scale,
+                              ),
+                              SizedBox(width: 8 * scale),
+                              Text(
+                                "Previous Visits",
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8 * scale),
+                          ...appointment.previousDiagnoses!.map((diagnosis) {
+                            return Padding(
+                              padding: EdgeInsets.only(bottom: 4 * scale),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.fiber_manual_record,
+                                    size: 8 * scale,
+                                    color: AppColors.primary,
+                                  ),
+                                  SizedBox(width: 8 * scale),
+                                  Expanded(
+                                    child: Text(
+                                      diagnosis,
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                        fontSize: 13 * scale,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  // Cancel button for Upcoming appointments
+                  if (_selectedTab == 1) ...[
+                    SizedBox(height: 16 * scale),
+                    Divider(color: AppColors.greyLight, thickness: 1),
+                    SizedBox(height: 12 * scale),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              _navigateToBookingPage(appointment);
+                            },
+                            style: OutlinedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 12 * scale),
+                              side: BorderSide(color: AppColors.primary),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12 * scale),
+                              ),
+                            ),
+                            child: Text(
+                              "View Details",
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 14 * scale,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 12 * scale),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _showCancelDialog(context, appointment);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.error,
+                              padding: EdgeInsets.symmetric(vertical: 12 * scale),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12 * scale),
+                              ),
+                            ),
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(
+                                color: AppColors.white,
+                                fontSize: 14 * scale,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+
+                  // Rebook button for Cancelled appointments
+                  if (_selectedTab == 3) ...[
                     SizedBox(height: 16 * scale),
                     Divider(color: AppColors.greyLight, thickness: 1),
                     SizedBox(height: 12 * scale),
@@ -385,6 +572,72 @@ class AppointmentsPageState extends State<AppointmentsPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showCancelDialog(BuildContext context, Booking appointment) {
+    final scale = ResponsiveUtils.getScale(context);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20 * scale),
+        ),
+        title: Text(
+          "Cancel Appointment",
+          style: AppTextStyles.headlineSmall.copyWith(
+            fontSize: 18 * scale,
+            color: AppColors.primaryDark,
+          ),
+        ),
+        content: Text(
+          "Are you sure you want to cancel your appointment with Dr. ${appointment.doctorName} on ${appointment.date} at ${appointment.time}?",
+          style: AppTextStyles.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "No, Keep it",
+              style: TextStyle(
+                color: AppColors.grey,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _cancelAppointment(appointment);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+            ),
+            child: Text(
+              "Yes, Cancel",
+              style: TextStyle(
+                color: AppColors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _cancelAppointment(Booking appointment) {
+    setState(() {
+      appointment.status = "Cancelled";
+      appointment.statusColor = Booking.getStatusColor("Cancelled");
+      appointment.statusBackground = Booking.getStatusBackground("Cancelled");
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Appointment cancelled successfully"),
+        backgroundColor: AppColors.success,
+        duration: Duration(seconds: 2),
       ),
     );
   }

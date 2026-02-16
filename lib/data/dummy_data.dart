@@ -1,23 +1,22 @@
 // dummy_data.dart
 import '../models/doctor_model.dart';
-import 'package:flutter/material.dart';
 
 // List of dummy doctors
 List<Doctor> dummyDoctors = [
   Doctor(
-    name: "Osama Rabie", // إزالة Dr.
+    name: "Dr. Osama Rabie",
     specialty: "Dermatology",
     location: "Cairo – Maadi",
     contact: "01012345678",
     rating: 4.9,
     image:
-    "assets/photogrid.photocollagemaker.photoeditor.squarepic_202422121565198.png",
+        "assets/photogrid.photocollagemaker.photoeditor.squarepic_202422121565198.png",
     availableTimes: ["Monday 9 AM - 12 PM", "Wednesday 2 PM - 5 PM"],
     consultationFee: 250.0,
     isSaved: false,
   ),
   Doctor(
-    name: "Sara Mohamed", // إزالة Dr.
+    name: "Dr. Sara Mohamed",
     specialty: "Dermatologist",
     location: "Cairo – Nasr City",
     contact: "01087654321",
@@ -28,7 +27,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Khaled Omar", // إزالة Dr.
+    name: "Dr. Khaled Omar",
     specialty: "Surgeon",
     location: "Alexandria",
     contact: "01011223344",
@@ -39,7 +38,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Ahmed Hassan", // إزالة Dr.
+    name: "Dr. Ahmed Hassan",
     specialty: "Orthopedic",
     location: "Cairo – Zamalek",
     contact: "01022334455",
@@ -50,7 +49,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Mona Samy", // إزالة Dr.
+    name: "Dr. Mona Samy",
     specialty: "Dentist",
     location: "Cairo – Heliopolis",
     contact: "01033445566",
@@ -61,7 +60,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Omar Ibrahim", // إزالة Dr.
+    name: "Dr. Omar Ibrahim",
     specialty: "Neurologist",
     location: "Cairo – Mohandessin",
     contact: "01044556677",
@@ -72,7 +71,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Tamer Ali", // إزالة Dr.
+    name: "Dr. Tamer Ali",
     specialty: "Pediatrician",
     location: "Cairo – Nasr City",
     contact: "01055667788",
@@ -83,7 +82,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Ahmed Zaki", // إزالة Dr.
+    name: "Dr. Ahmed Zaki",
     specialty: "Psychologist",
     location: "Cairo – Maadi",
     contact: "01066778899",
@@ -94,7 +93,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Yasser El-Feky", // إزالة Dr.
+    name: "Dr. Yasser El-Feky",
     specialty: "General Physician",
     location: "Cairo – Shobra",
     contact: "01077889900",
@@ -105,7 +104,7 @@ List<Doctor> dummyDoctors = [
     isSaved: true,
   ),
   Doctor(
-    name: "Nada Ahmed", // إزالة Dr.
+    name: "Dr. Nada Ahmed",
     specialty: "Gynaecologist",
     location: "Cairo – Heliopolis",
     contact: "01088990011",
@@ -115,9 +114,9 @@ List<Doctor> dummyDoctors = [
     consultationFee: 350.0,
     isSaved: false,
   ),
-  // إضافة أطباء جدد ليصبح العدد 20
+  // أطباء إضافيين
   Doctor(
-    name: "Ali Mahmoud",
+    name: "Dr. Ali Mahmoud",
     specialty: "Cardiologist",
     location: "Cairo – Nasr City",
     contact: "01099001122",
@@ -128,7 +127,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Fatma Salem",
+    name: "Dr. Fatma Salem",
     specialty: "Pediatrician",
     location: "Alexandria",
     contact: "01000112233",
@@ -139,7 +138,7 @@ List<Doctor> dummyDoctors = [
     isSaved: true,
   ),
   Doctor(
-    name: "Mahmoud Rashed",
+    name: "Dr. Mahmoud Rashed",
     specialty: "Orthopedic Surgeon",
     location: "Cairo – Maadi",
     contact: "01011223344",
@@ -150,7 +149,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Hana Omar",
+    name: "Dr. Hana Omar",
     specialty: "Dermatologist",
     location: "Cairo – Heliopolis",
     contact: "01022334455",
@@ -161,7 +160,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Karim Adel",
+    name: "Dr. Karim Adel",
     specialty: "Neurologist",
     location: "Cairo – Zamalek",
     contact: "01033445566",
@@ -172,7 +171,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Rania Sobhy",
+    name: "Dr. Rania Sobhy",
     specialty: "Gynecologist",
     location: "Cairo – Mohandessin",
     contact: "01044556677",
@@ -183,7 +182,7 @@ List<Doctor> dummyDoctors = [
     isSaved: true,
   ),
   Doctor(
-    name: "Amr Walid",
+    name: "Dr. Amr Walid",
     specialty: "ENT Specialist",
     location: "Cairo – Nasr City",
     contact: "01055667788",
@@ -194,7 +193,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Dina Karam",
+    name: "Dr. Dina Karam",
     specialty: "Psychiatrist",
     location: "Alexandria",
     contact: "01066778899",
@@ -205,7 +204,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Sherif Nasser",
+    name: "Dr. Sherif Nasser",
     specialty: "General Surgeon",
     location: "Cairo – Maadi",
     contact: "01077889900",
@@ -216,7 +215,7 @@ List<Doctor> dummyDoctors = [
     isSaved: false,
   ),
   Doctor(
-    name: "Laila Mostafa",
+    name: "Dr. Laila Mostafa",
     specialty: "Dentist",
     location: "Cairo – Heliopolis",
     contact: "01088990011",
@@ -228,81 +227,149 @@ List<Doctor> dummyDoctors = [
   ),
 ];
 
-// تحديث الـ bookings لاستخدام الأسماء الجديدة
+// قائمة الحجوزات التجريبية
 List<Booking> dummyBookings = [
+  // حجز مكتمل مع تشخيص
   Booking(
-    doctorName: dummyDoctors[0].name, // Osama Rabie
+    doctorName: dummyDoctors[0].name,
     specialty: dummyDoctors[0].specialty,
     doctorImage: dummyDoctors[0].image,
     status: "Completed",
-    statusColor: Colors.green,
-    statusBackground: Colors.green.shade100,
-    date: "2023-12-12",
-    time: "9:00 AM",
-    location: "Cairo – Maadi",
+    statusColor: Booking.getStatusColor("Completed"),
+    statusBackground: Booking.getStatusBackground("Completed"),
+    date: "Dec 5, 2024",
+    time: "11:00 AM",
+    location: dummyDoctors[0].location,
     consultationFee: dummyDoctors[0].consultationFee,
     isSaved: false,
     rating: dummyDoctors[0].rating,
+    diagnosis: "Hypertension - High blood pressure detected",
   ),
+
+  // حجز قادم (Upcoming) مع تشخيصات سابقة
   Booking(
-    doctorName: dummyDoctors[1].name, // Sara Mohamed
+    doctorName: dummyDoctors[1].name,
     specialty: dummyDoctors[1].specialty,
     doctorImage: dummyDoctors[1].image,
-    status: "Pending",
-    statusColor: Colors.orange,
-    statusBackground: Colors.orange.shade100,
-    date: "2023-12-13",
-    time: "10:30 AM",
-    location: "Cairo – Nasr City",
+    status: "Upcoming",
+    statusColor: Booking.getStatusColor("Upcoming"),
+    statusBackground: Booking.getStatusBackground("Upcoming"),
+    date: "Feb 20, 2026",
+    time: "02:30 PM",
+    location: dummyDoctors[1].location,
     consultationFee: dummyDoctors[1].consultationFee,
-    isSaved: false,
+    isSaved: true,
     rating: dummyDoctors[1].rating,
+    previousDiagnoses: [
+      "Acne treatment - Prescribed topical cream (Feb 2025)",
+      "Skin allergy - Prescribed antihistamines (Aug 2025)"
+    ],
   ),
+
+  // حجز مكتمل آخر
   Booking(
-    doctorName: dummyDoctors[2].name, // Khaled Omar
+    doctorName: dummyDoctors[2].name,
     specialty: dummyDoctors[2].specialty,
     doctorImage: dummyDoctors[2].image,
     status: "Completed",
-    statusColor: Colors.green,
-    statusBackground: Colors.green.shade100,
-    date: "2023-12-14",
-    time: "2:00 PM",
-    location: "Alexandria",
+    statusColor: Booking.getStatusColor("Completed"),
+    statusBackground: Booking.getStatusBackground("Completed"),
+    date: "Dec 3, 2024",
+    time: "09:00 AM",
+    location: dummyDoctors[2].location,
     consultationFee: dummyDoctors[2].consultationFee,
     isSaved: false,
     rating: dummyDoctors[2].rating,
+    diagnosis: "Fractured right arm - X-ray confirmed",
   ),
+
+  // حجز ملغي
   Booking(
-    doctorName: dummyDoctors[3].name, // Ahmed Hassan
+    doctorName: dummyDoctors[3].name,
     specialty: dummyDoctors[3].specialty,
     doctorImage: dummyDoctors[3].image,
     status: "Cancelled",
-    statusColor: Colors.red,
-    statusBackground: Colors.red.shade100,
-    date: "2023-12-15",
-    time: "11:00 AM",
-    location: "Cairo – Zamalek",
+    statusColor: Booking.getStatusColor("Cancelled"),
+    statusBackground: Booking.getStatusBackground("Cancelled"),
+    date: "Nov 30, 2024",
+    time: "02:00 PM",
+    location: dummyDoctors[3].location,
     consultationFee: dummyDoctors[3].consultationFee,
-    isSaved: false,
     rating: dummyDoctors[3].rating,
   ),
+
+  // حجز قادم آخر لنفس الدكتور (مرتين)
   Booking(
-    doctorName: dummyDoctors[4].name, // Mona Samy
+    doctorName: dummyDoctors[4].name,
     specialty: dummyDoctors[4].specialty,
     doctorImage: dummyDoctors[4].image,
-    status: "Cancelled",
-    statusColor: Colors.red,
-    statusBackground: Colors.red.shade100,
-    date: "2023-12-16",
-    time: "3:00 PM",
-    location: "Cairo – Heliopolis",
+    status: "Upcoming",
+    statusColor: Booking.getStatusColor("Upcoming"),
+    statusBackground: Booking.getStatusBackground("Upcoming"),
+    date: "Mar 10, 2026",
+    time: "10:00 AM",
+    location: dummyDoctors[4].location,
     consultationFee: dummyDoctors[4].consultationFee,
     isSaved: false,
     rating: dummyDoctors[4].rating,
+    previousDiagnoses: [
+      "Root canal treatment (Nov 2025)",
+      "Teeth whitening procedure (Dec 2025)",
+      "Cavity filling (Jan 2026)"
+    ],
+  ),
+
+  // حجز مكتمل مع تشخيص بسيط
+  Booking(
+    doctorName: dummyDoctors[5].name,
+    specialty: dummyDoctors[5].specialty,
+    doctorImage: dummyDoctors[5].image,
+    status: "Completed",
+    statusColor: Booking.getStatusColor("Completed"),
+    statusBackground: Booking.getStatusBackground("Completed"),
+    date: "Jan 15, 2026",
+    time: "03:00 PM",
+    location: dummyDoctors[5].location,
+    consultationFee: dummyDoctors[5].consultationFee,
+    isSaved: false,
+    rating: dummyDoctors[5].rating,
+    diagnosis: "Migraine - Chronic headaches",
+  ),
+
+  // حجز قادم بدون تشخيصات سابقة
+  Booking(
+    doctorName: dummyDoctors[6].name,
+    specialty: dummyDoctors[6].specialty,
+    doctorImage: dummyDoctors[6].image,
+    status: "Upcoming",
+    statusColor: Booking.getStatusColor("Upcoming"),
+    statusBackground: Booking.getStatusBackground("Upcoming"),
+    date: "Apr 5, 2026",
+    time: "11:30 AM",
+    location: dummyDoctors[6].location,
+    consultationFee: dummyDoctors[6].consultationFee,
+    isSaved: false,
+    rating: dummyDoctors[6].rating,
+  ),
+
+  // حجز ملغي آخر
+  Booking(
+    doctorName: dummyDoctors[7].name,
+    specialty: dummyDoctors[7].specialty,
+    doctorImage: dummyDoctors[7].image,
+    status: "Cancelled",
+    statusColor: Booking.getStatusColor("Cancelled"),
+    statusBackground: Booking.getStatusBackground("Cancelled"),
+    date: "Dec 10, 2025",
+    time: "04:00 PM",
+    location: dummyDoctors[7].location,
+    consultationFee: dummyDoctors[7].consultationFee,
+    isSaved: false,
+    rating: dummyDoctors[7].rating,
   ),
 ];
 
-// List of dummy payment confirmations
+// قائمة تأكيدات الدفع التجريبية
 List<PaymentConfirmation> dummyPaymentConfirmations = [
   PaymentConfirmation(
     booking: dummyBookings[0],
@@ -314,6 +381,6 @@ List<PaymentConfirmation> dummyPaymentConfirmations = [
   ),
   PaymentConfirmation(
     booking: dummyBookings[2],
-    status: "Completed",
+    status: "Confirmed",
   ),
 ];

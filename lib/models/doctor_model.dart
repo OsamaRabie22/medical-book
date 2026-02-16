@@ -3,6 +3,8 @@
 // doctor_model.dart
 import 'dart:ui';
 
+import '../core/constants/app_colors.dart';
+
 // doctor_model.dart
 class Doctor {
   String name;
@@ -71,19 +73,25 @@ class Doctor {
 // booking_model.dart
 
 
+// booking_model.dart
+
 class Booking {
   String doctorName;
   String specialty;
   String doctorImage;
-  String status; // الحالة مثل "Completed", "Cancelled"
-  Color statusColor; // اللون المرتبط بالحالة
-  Color statusBackground; // الخلفية الملونة بناءً على الحالة
+  String status; // الحالة مثل "Completed", "Cancelled", "Upcoming"
+  Color statusColor;
+  Color statusBackground;
   String date;
   String time;
   String location;
   double consultationFee;
-  bool isSaved; // إذا كانت الحجز محفوظة أم لا
+  bool isSaved;
   double rating;
+
+  // حقول جديدة للتشخيص
+  String? diagnosis; // التشخيص
+  List<String>? previousDiagnoses; // للتشخيصات السابقة (لو رحت للدكتور مرتين)
 
   Booking({
     required this.doctorName,
@@ -98,7 +106,36 @@ class Booking {
     required this.consultationFee,
     this.isSaved = false,
     required this.rating,
+    this.diagnosis,
+    this.previousDiagnoses,
   });
+
+  // دالة مساعدة للحصول على الألوان حسب الحالة
+  static Color getStatusColor(String status) {
+    switch (status) {
+      case 'Completed':
+        return AppColors.success;
+      case 'Cancelled':
+        return AppColors.error;
+      case 'Upcoming':
+        return AppColors.primary;
+      default:
+        return AppColors.grey;
+    }
+  }
+
+  static Color getStatusBackground(String status) {
+    switch (status) {
+      case 'Completed':
+        return AppColors.success.withOpacity(0.1);
+      case 'Cancelled':
+        return AppColors.error.withOpacity(0.1);
+      case 'Upcoming':
+        return AppColors.primary.withOpacity(0.1);
+      default:
+        return AppColors.grey.withOpacity(0.1);
+    }
+  }
 }
 
 // payment_confirmation_model.dart
