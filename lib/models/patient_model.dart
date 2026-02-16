@@ -1,9 +1,7 @@
-// [file name]: lib/models/patient_model.dart
-
 class Patient {
-  final int? patientId; // ✅ إضافة هذا
+  final int? patientId;
   final String? patientName;
-  final int? patientAge;
+  final int? patientAge; // للاستخدام الداخلي فقط (مش بيتبعث)
   final String? patientGender;
   final String? patientCity;
   final String? patientEmail;
@@ -11,6 +9,7 @@ class Patient {
   final bool? patientMarried;
   final String? patientPhone;
   final String? patientImage;
+  final String? birthDate; // ✅ أضفناها هنا للتاريخ
 
   // Medical Info
   final double? patientHeight;
@@ -24,7 +23,7 @@ class Patient {
   final List<Map<String, dynamic>>? patientFamilyHistory;
 
   Patient({
-    this.patientId, // ✅ إضافة هذا
+    this.patientId,
     this.patientName,
     this.patientAge,
     this.patientGender,
@@ -34,6 +33,7 @@ class Patient {
     this.patientMarried,
     this.patientPhone,
     this.patientImage,
+    this.birthDate, // ✅ أضفناها هنا
     this.patientHeight,
     this.patientWeight,
     this.patientBloodType,
@@ -69,6 +69,7 @@ class Patient {
       patientMarried: this.patientMarried,
       patientPhone: this.patientPhone,
       patientImage: this.patientImage,
+      birthDate: this.birthDate,
       patientHeight: patientHeight ?? this.patientHeight,
       patientWeight: patientWeight ?? this.patientWeight,
       patientBloodType: patientBloodType ?? this.patientBloodType,
@@ -82,59 +83,68 @@ class Patient {
     );
   }
 
-  // Convert to JSON for API (Signup)
+  // ✅ دالة تحويل البيانات لـ API Signup (الشكل النهائي المطلوب)
+  // في lib/models/patient_model.dart
   Map<String, dynamic> toSignupJson() {
-    return {
+    final data = {
       'patient_name': patientName,
-      'patient_age': patientAge,
-      'patient_gender': patientGender,
-      'patient_city': patientCity,
       'patient_email': patientEmail,
       'patient_password': patientPassword,
-      'patient_married': patientMarried,
       'patient_phone': patientPhone,
-      'patient_image': patientImage,
+      'patient_city': patientCity,
+      'birth_date': birthDate, // تأكد أن هذا موجود
+      'patient_gender': patientGender,
+      'patient_married': patientMarried,
     };
+
+    // إزالة أي قيم null
+    data.removeWhere((key, value) => value == null);
+
+    print("📦 Final signup data: $data");
+    return data;
   }
 
+  // ✅ دالة مساعدة لتاريخ افتراضي (لو مفيش تاريخ)
+  String _getDefaultBirthDate() {
+    return DateTime.now()
+        .subtract(const Duration(days: 365 * 25))
+        .toIso8601String();
+  }
+
+  // ✅ دالة تحويل بيانات البروفايل من API
+  // [file name]: lib/models/patient_model.dart
+
+// ✅ دالة تحويل بيانات البروفايل من API - محدثة
+  // ✅ دالة تحويل بيانات البروفايل من API - الشكل النهائي
   factory Patient.fromJsonProfile(Map<String, dynamic> json) {
     print("🟢 Parsing profile JSON: $json");
+    print("🟢 JSON keys: ${json.keys.toList()}");
 
     return Patient(
-      patientId: json['patientId'],
-      patientName: json['patientName'] ?? 'Unknown',
-      patientAge: json['patientAge'] ?? 0,
-      // لو null، استخدم 0
-      patientGender: json['patientGender'] ?? 'Not specified',
-      // لو null، استخدم قيمة افتراضية
-      patientCity: json['patientCity'] ?? '',
-      patientEmail: json['patientEmail'] ?? '',
-      patientMarried: json['patientMarried'] ?? false,
-      patientPhone: json['patientPhone'] ?? '',
-      patientImage: json['patientImage'],
+      // ✅ استخدم الأسماء من الـ Response الفعلي
+      patientId: json['patient_id'],
+      // المفتاح الصحيح
+      patientName: json['patient_name'] ?? 'Unknown',
+      patientAge: json['patient_age'] ?? 0,
+      patientGender: json['patient_Gender'],
+      // المفتاح الصحيح
+      patientCity: json['patient_city'] ?? '',
+      patientEmail: json['patient_email'] ?? '',
+      patientMarried: json['patient_married'] ?? false,
+      patientPhone: json['patient_phone'] ?? '',
+      patientImage: json['patient_image'],
+      birthDate: json['birth_date'],
 
-      // Medical info (افتراضي null)
-      patientHeight: json['patientHeight'],
-      patientWeight: json['patientWeight'],
-      patientBloodType: json['patientBloodType'],
-      patientChronicDiseases: json['patientChronicDiseases'] != null
-          ? List<String>.from(json['patientChronicDiseases'])
-          : null,
-      patientAllergies: json['patientAllergies'] != null
-          ? List<String>.from(json['patientAllergies'])
-          : null,
-      patientMedications: json['patientMedications'] != null
-          ? List<String>.from(json['patientMedications'])
-          : null,
-      patientVaccinations: json['patientVaccinations'] != null
-          ? List<String>.from(json['patientVaccinations'])
-          : null,
-      patientSurgeries: json['patientSurgeries'] != null
-          ? List<Map<String, dynamic>>.from(json['patientSurgeries'])
-          : null,
-      patientFamilyHistory: json['patientFamilyHistory'] != null
-          ? List<Map<String, dynamic>>.from(json['patientFamilyHistory'])
-          : null,
+      // Medical info (كلها null حالياً)
+      patientHeight: null,
+      patientWeight: null,
+      patientBloodType: null,
+      patientChronicDiseases: null,
+      patientAllergies: null,
+      patientMedications: null,
+      patientVaccinations: null,
+      patientSurgeries: null,
+      patientFamilyHistory: null,
     );
   }
 }

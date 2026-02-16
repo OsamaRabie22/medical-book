@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical_book/screens/home/specialties_page.dart';
 import 'bottom_navigation.dart';
 import 'home_content.dart';
 
@@ -26,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   // الصفحات اللي هنربطها بالـ BottomNav
   final List<Widget> pages = [
     const HomeContent(),
-    const DoctorsPage(), // دي هتكون SearchPage دلوقتي
+    const SpecialtiesPage(), // دي هتكون SearchPage دلوقتي
     const AppointmentsPage(),
     const ProfilePage(),
   ];
@@ -44,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   Widget buildBottomNav() {
     final items = [
       {'icon': Icons.home_outlined, 'label': 'Home'},
-      {'icon': Icons.local_hospital_outlined, 'label': 'Doctors'},
+      {'icon': Icons.local_hospital_outlined, 'label': 'Specialties'},
       {'icon': Icons.calendar_today_outlined, 'label': 'Appointments'},
       {'icon': Icons.person_outline, 'label': 'Profile'},
     ];

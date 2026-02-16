@@ -4,7 +4,7 @@ import '../../core/constants/app_styles.dart';
 import '../../core/utils/responsive_utils.dart';
 import '../../models/doctor_model.dart';
 import 'booking_page.dart';
-import 'doctor_card.dart';
+import '../../widgets/doctor_card.dart';
 import '../../data/dummy_data.dart'; // تأكد من إضافة هذا الـ import
 
 class SpecialtyDoctorsPage extends StatefulWidget {

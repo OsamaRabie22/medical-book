@@ -5,7 +5,7 @@ import '../../core/constants/app_styles.dart';
 import '../../core/utils/responsive_utils.dart';
 import '../../states/appointment_state.dart';
 import '../home/booking_page.dart';
-import '../home/doctor_card.dart';
+import '../../widgets/doctor_card.dart';
 
 class SearchResultsPage extends StatefulWidget {
   final String initialQuery;

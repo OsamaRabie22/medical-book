@@ -36,7 +36,8 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (_emailError == null && _passwordError == null) {
-      final patientProvider = Provider.of<PatientProvider>(context, listen: false);
+      final patientProvider =
+          Provider.of<PatientProvider>(context, listen: false);
 
       final success = await patientProvider.loginAndFetchPatient(
         _emailController.text,

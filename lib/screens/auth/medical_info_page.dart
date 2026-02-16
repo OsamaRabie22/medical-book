@@ -1,11 +1,15 @@
+// [file name]: lib/screens/auth/medical_info_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_styles.dart';
 import '../../../core/utils/responsive_utils.dart';
 import '../../../core/utils/validators.dart';
 import '../../../models/patient_model.dart';
 import '../../../models/sick_record_model.dart';
+import '../../../providers/patient_provider.dart';
 import '../../../services/api_service.dart';
 import '../../../widgets/custom_input_field.dart';
 import '../home/home_page.dart';
@@ -38,13 +42,19 @@ class _MedicalInfoPageState extends State<MedicalInfoPage> {
   String? _bloodTypeError;
 
   final List<String> _bloodTypes = [
-    'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'
+    'A+',
+    'A-',
+    'B+',
+    'B-',
+    'AB+',
+    'AB-',
+    'O+',
+    'O-'
   ];
 
   final ApiService _apiService = ApiService();
   bool _isLoading = false;
 
-  // ✅ دالة للتحقق من صحة البيانات لو المستخدم اختار يدخلها
   void _validateAllFields() {
     setState(() {
       _heightError = _heightController.text.isNotEmpty
@@ -59,7 +69,6 @@ class _MedicalInfoPageState extends State<MedicalInfoPage> {
     });
   }
 
-  // ✅ دالة للتحقق من إن البيانات اللي دخلها صح (لو دخل حاجة)
   bool _hasValidData() {
     if (_heightController.text.isNotEmpty && _heightError != null) return false;
     if (_weightController.text.isNotEmpty && _weightError != null) return false;
@@ -67,7 +76,7 @@ class _MedicalInfoPageState extends State<MedicalInfoPage> {
     return true;
   }
 
-  // ✅ دالة إنشاء sick record (اختيارية)
+  // ✅ دالة إنشاء sick record
   Future<void> _createSickRecord() async {
     _validateAllFields();
 
@@ -87,52 +96,139 @@ class _MedicalInfoPageState extends State<MedicalInfoPage> {
     });
 
     try {
-      // ✅ لو مفيش بيانات، نتخطى API call
-      if (_heightController.text.isEmpty ||
-          _weightController.text.isEmpty ||
-          _selectedBloodType == null) {
-        print("Skipping medical info - no data provided");
-        Get.offAll(const HomePage());
-        return;
-      }
+      // ✅ جلب الـ PatientProvider
+      final patientProvider =
+          Provider.of<PatientProvider>(context, listen: false);
 
-      // Create sick record (فيه بيانات)
-      final sickRecord = SickRecord(
-        patientId: widget.patient.patientId ?? 0,
-        patientHeight: int.parse(_heightController.text),
-        patientWeight: int.parse(_weightController.text),
-        patientAnaemia: _hasAnaemia,
-        patientHypertension: _hasHypertension,
-        patientDiabetes: _hasDiabetes,
-        residenceType: _residenceType ? "urban" : "rural",
-        patientBloodType: _selectedBloodType!,
+      // ✅ تحديث البيانات مع المعلومات الطبية
+      final updatedPatient = widget.patient.copyWithMedicalInfo(
+        patientHeight: _heightController.text.isNotEmpty
+            ? double.tryParse(_heightController.text)
+            : null,
+        patientWeight: _weightController.text.isNotEmpty
+            ? double.tryParse(_weightController.text)
+            : null,
+        patientBloodType: _selectedBloodType,
       );
 
-      print("Sending data: ${sickRecord.toCreateJson()}");
-
-      // Call API
-      final response = await _apiService.createSickRecord(sickRecord.toCreateJson());
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        Get.snackbar(
-          'Success',
-          'Medical information saved successfully!',
-          backgroundColor: AppColors.success.withOpacity(0.1),
-          colorText: AppColors.success,
-          snackPosition: SnackPosition.BOTTOM,
-          duration: Duration(seconds: 2),
-        );
-      } else {
-        print("Error saving medical info: ${response.data}");
+      print("==========================================");
+      print("✅ Updating Patient in Provider:");
+      print("   - ID: ${updatedPatient.patientId}");
+      print("   - Name: ${updatedPatient.patientName}");
+      print("   - Email: ${updatedPatient.patientEmail}");
+      if (updatedPatient.patientHeight != null) {
+        print("   - Height: ${updatedPatient.patientHeight}");
       }
+      if (updatedPatient.patientWeight != null) {
+        print("   - Weight: ${updatedPatient.patientWeight}");
+      }
+      if (updatedPatient.patientBloodType != null) {
+        print("   - Blood Type: ${updatedPatient.patientBloodType}");
+      }
+      print("==========================================");
+
+      // ✅ حفظ البيانات المحدثة في Provider
+      patientProvider.updatePatient(updatedPatient);
+
+      // ✅ التحقق من وجود بيانات كافية لإرسالها إلى API sick-record
+      bool hasMedicalData = _heightController.text.isNotEmpty &&
+          _weightController.text.isNotEmpty &&
+          _selectedBloodType != null;
+
+      if (hasMedicalData &&
+          widget.patient.patientId != null &&
+          widget.patient.patientId! > 0) {
+        try {
+          // ✅ إنشاء sick record
+          final sickRecord = SickRecord(
+            patientId: widget.patient.patientId!,
+            patientHeight: int.parse(_heightController.text),
+            patientWeight: int.parse(_weightController.text),
+            patientAnaemia: _hasAnaemia,
+            patientHypertension: _hasHypertension,
+            patientDiabetes: _hasDiabetes,
+            residenceType: _residenceType ? "urban" : "rural",
+            patientBloodType: _selectedBloodType!,
+          );
+
+          print("📤 Sending sick record to API: ${sickRecord.toCreateJson()}");
+
+          // ✅ استدعاء API
+          final response =
+              await _apiService.createSickRecord(sickRecord.toCreateJson());
+
+          if (response.statusCode == 200 || response.statusCode == 201) {
+            print("✅ Sick record saved successfully");
+            Get.snackbar(
+              'Success',
+              'Medical information saved successfully!',
+              backgroundColor: AppColors.success.withOpacity(0.1),
+              colorText: AppColors.success,
+              snackPosition: SnackPosition.BOTTOM,
+              duration: Duration(seconds: 2),
+            );
+          } else {
+            print("⚠️ Sick record API returned: ${response.statusCode}");
+            print("⚠️ Response data: ${response.data}");
+            Get.snackbar(
+              'Warning',
+              'Profile saved, but medical record failed to save on server.',
+              backgroundColor: AppColors.warning.withOpacity(0.1),
+              colorText: AppColors.warning,
+              snackPosition: SnackPosition.BOTTOM,
+              duration: Duration(seconds: 3),
+            );
+          }
+        } catch (e) {
+          print("💥 Error sending sick record to API: $e");
+          Get.snackbar(
+            'Warning',
+            'Profile saved locally, but could not connect to server.',
+            backgroundColor: AppColors.warning.withOpacity(0.1),
+            colorText: AppColors.warning,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: Duration(seconds: 3),
+          );
+        }
+      } else {
+        if (_heightController.text.isNotEmpty ||
+            _weightController.text.isNotEmpty ||
+            _selectedBloodType != null) {
+          Get.snackbar(
+            'Info',
+            'Partial medical data saved locally.',
+            backgroundColor: AppColors.info.withOpacity(0.1),
+            colorText: AppColors.info,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: Duration(seconds: 2),
+          );
+        } else {
+          Get.snackbar(
+            'Success',
+            'Profile completed successfully!',
+            backgroundColor: AppColors.success.withOpacity(0.1),
+            colorText: AppColors.success,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: Duration(seconds: 2),
+          );
+        }
+      }
+
+      // ✅ الانتقال إلى الصفحة الرئيسية
+      Get.offAll(const HomePage());
     } catch (e) {
-      print("Error creating sick record: $e");
+      print("💥 Error in _createSickRecord: $e");
+      Get.snackbar(
+        'Error',
+        'An error occurred. Please try again.',
+        backgroundColor: AppColors.error.withOpacity(0.1),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       setState(() {
         _isLoading = false;
       });
-      // ✅ دايماً نروح للـ Home سواء نجح أو فشل أو اتخطى
-      Get.offAll(const HomePage());
     }
   }
 
@@ -160,10 +256,24 @@ class _MedicalInfoPageState extends State<MedicalInfoPage> {
           ),
           onPressed: () => Get.back(),
         ),
-        // ✅ إضافة زر Skip في الـ AppBar
         actions: [
           TextButton(
             onPressed: () {
+              // ✅ Skip: احفظ البيانات الأساسية فقط
+              final patientProvider =
+                  Provider.of<PatientProvider>(context, listen: false);
+              patientProvider.updatePatient(widget.patient);
+              print("⚠️ User skipped medical info - saved basic data only");
+
+              Get.snackbar(
+                'Info',
+                'Profile saved with basic information.',
+                backgroundColor: AppColors.info.withOpacity(0.1),
+                colorText: AppColors.info,
+                snackPosition: SnackPosition.BOTTOM,
+                duration: Duration(seconds: 2),
+              );
+
               Get.offAll(const HomePage());
             },
             child: Text(
@@ -245,8 +355,8 @@ class _MedicalInfoPageState extends State<MedicalInfoPage> {
                           ),
                         ],
                       ),
-                      // ID display (if exists)
-                      if (widget.patient.patientId != null && widget.patient.patientId != 0) ...[
+                      if (widget.patient.patientId != null &&
+                          widget.patient.patientId != 0) ...[
                         SizedBox(height: 4 * scale),
                         Row(
                           children: [
@@ -425,19 +535,19 @@ class _MedicalInfoPageState extends State<MedicalInfoPage> {
                     ),
                     child: _isLoading
                         ? SizedBox(
-                      height: 20 * scale,
-                      width: 20 * scale,
-                      child: CircularProgressIndicator(
-                        color: AppColors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
+                            height: 20 * scale,
+                            width: 20 * scale,
+                            child: CircularProgressIndicator(
+                              color: AppColors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
                         : Text(
-                      "Continue to Home",
-                      style: AppTextStyles.buttonMedium.copyWith(
-                        fontSize: 18 * scale,
-                      ),
-                    ),
+                            "Continue to Home",
+                            style: AppTextStyles.buttonMedium.copyWith(
+                              fontSize: 18 * scale,
+                            ),
+                          ),
                   ),
                 ),
               ],
@@ -476,7 +586,6 @@ class _MedicalInfoPageState extends State<MedicalInfoPage> {
     );
   }
 
-  // ... باقي دوال build زي ما هي (مفيش تغيير)
   Widget _buildInputField({
     required TextEditingController controller,
     required String hint,

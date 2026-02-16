@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/constants/app_colors.dart';
-import '../../core/constants/app_styles.dart';
-import '../../core/utils/responsive_utils.dart';
-import '../../models/doctor_model.dart';
-import '../../states/appointment_state.dart';
+import '../core/constants/app_colors.dart';
+import '../core/constants/app_styles.dart';
+import '../core/utils/responsive_utils.dart';
+import '../models/doctor_model.dart';
+import '../states/appointment_state.dart';
 
 class DoctorCard extends StatefulWidget {
   final Doctor doctor;

@@ -175,7 +175,7 @@ class PaymentConfirmationPage extends StatelessWidget {
               SizedBox(height: 32 * scale),
               Text(
                 "Your appointment has been successfully booked!\n"
-                    "You will receive a confirmation email shortly.",
+                "You will receive a confirmation email shortly.",
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontSize: 16 * scale,
                   color: AppColors.greyDark,

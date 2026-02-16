@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/constants/app_colors.dart';
-import '../../core/constants/app_styles.dart';
-import '../../core/utils/responsive_utils.dart';
-import '../../providers/patient_provider.dart';
+import '../core/constants/app_colors.dart';
+import '../core/constants/app_styles.dart';
+import '../core/utils/responsive_utils.dart';
+import '../providers/patient_provider.dart';
 
 Widget buildHeader(BuildContext context) {
   final scale = ResponsiveUtils.getScale(context);

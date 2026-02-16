@@ -13,9 +13,13 @@ class PatientProvider extends ChangeNotifier {
   String? _token;
 
   Patient? get currentPatient => _currentPatient;
+
   bool get isLoading => _isLoading;
+
   String? get error => _error;
+
   String? get token => _token;
+
   bool get isLoggedIn => _currentPatient != null;
 
   final ApiService _apiService = ApiService();
@@ -41,7 +45,6 @@ class PatientProvider extends ChangeNotifier {
       print("==========================================");
 
       if (loginResponse.statusCode == 200 && loginResponse.data != null) {
-
         int? patientId;
         String? token;
         String? patientName;
@@ -103,7 +106,8 @@ class PatientProvider extends ChangeNotifier {
 
           // ✅ Plan B: لو الـ API فشل أو رجع بيانات ناقصة
           if (!profileFetchedSuccessfully || _currentPatient == null) {
-            print("🔵 Step 4: Using basic data from login response (API failed or incomplete)");
+            print(
+                "🔵 Step 4: Using basic data from login response (API failed or incomplete)");
 
             _currentPatient = Patient(
               patientId: patientId,
@@ -120,7 +124,6 @@ class PatientProvider extends ChangeNotifier {
           _isLoading = false;
           notifyListeners();
           return _currentPatient != null;
-
         } else {
           print("❌ No patient ID found in response");
           _error = 'Failed to get patient ID from server';
@@ -135,7 +138,6 @@ class PatientProvider extends ChangeNotifier {
         notifyListeners();
         return false;
       }
-
     } on DioException catch (e) {
       print("💥 DioException during login: ${e.type}");
       print("💥 Status: ${e.response?.statusCode}");
@@ -149,7 +151,6 @@ class PatientProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return false;
-
     } catch (e) {
       print("💥 Exception during login: $e");
       _error = 'Error: $e';
@@ -188,7 +189,8 @@ class PatientProvider extends ChangeNotifier {
           print("   - ID: ${_currentPatient?.patientId}");
           print("   - Name: ${_currentPatient?.patientName}");
           print("   - Age: ${_currentPatient?.patientAge}"); // هتظهر 0 لو null
-          print("   - Gender: ${_currentPatient?.patientGender}"); // هتظهر 'Not specified' لو null
+          print(
+              "   - Gender: ${_currentPatient?.patientGender}"); // هتظهر 'Not specified' لو null
           print("   - Email: ${_currentPatient?.patientEmail}");
           print("   - Phone: ${_currentPatient?.patientPhone}");
           print("   - City: ${_currentPatient?.patientCity}");
@@ -199,10 +201,10 @@ class PatientProvider extends ChangeNotifier {
           throw parseError;
         }
       } else {
-        print("⚠️ Profile API returned unexpected status: ${response.statusCode}");
+        print(
+            "⚠️ Profile API returned unexpected status: ${response.statusCode}");
         throw Exception('Profile API returned ${response.statusCode}');
       }
-
     } on DioException catch (e) {
       print("==========================================");
       print("💥💥💥 DioException in fetchPatientProfile:");
@@ -216,7 +218,6 @@ class PatientProvider extends ChangeNotifier {
       print("==========================================");
 
       rethrow;
-
     } catch (e) {
       print("==========================================");
       print("💥💥💥 General Exception in fetchPatientProfile:");

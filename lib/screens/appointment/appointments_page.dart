@@ -7,7 +7,7 @@ import '../../core/constants/app_styles.dart';
 import '../../states/appointment_state.dart';
 import '../home/booking_page.dart';
 import '../home/bottom_navigation.dart';
-import '../home/doctor_card.dart';
+import '../../widgets/doctor_card.dart';
 import '../../data/dummy_data.dart';
 
 class AppointmentsPageState extends State<AppointmentsPage> {

@@ -1,8 +1,6 @@
-// [اسم الملف: اللي عندك - غالباً home_content.dart أو حاجة شبه كده]
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:medical_book/screens/home/search_page.dart';
+import 'package:medical_book/screens/home/specialties_page.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_styles.dart';
@@ -18,7 +16,7 @@ class DoctorsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SearchPage(); // رجعت SearchPage هنا
+    return const SpecialtiesPage(); // رجعت SearchPage هنا
   }
 }
 
@@ -28,9 +26,6 @@ class AppointmentsPage extends StatefulWidget {
   @override
   State<AppointmentsPage> createState() => AppointmentsPageState();
 }
-
-// ✅ ProfilePage المحدثة
-// [file name]: lib/screens/profile/profile_page.dart
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -70,122 +65,130 @@ class ProfilePage extends StatelessWidget {
       ),
       body: patientProvider.isLoading
           ? Center(
-        child: CircularProgressIndicator(
-          color: AppColors.primary,
-        ),
-      )
+              child: CircularProgressIndicator(
+                color: AppColors.primary,
+              ),
+            )
           : SingleChildScrollView(
-        padding: EdgeInsets.all(16 * scale),
-        child: Column(
-          children: [
-            // ✅ Profile Header
-            _buildProfileHeader(patient, scale),
-
-            SizedBox(height: 24 * scale),
-
-            // ✅ Personal Information Card
-            _buildSectionCard(
-              title: "Personal Information",
-              icon: Icons.person_outline,
-              scale: scale,
-              children: [
-                _buildInfoRow(
-                  icon: Icons.cake_outlined,
-                  label: "Age",
-                  value: patient.patientAge != null && patient.patientAge! > 0
-                      ? "${patient.patientAge} years"
-                      : "Not specified",
-                  scale: scale,
-                ),
-                _buildInfoRow(
-                  icon: patient.patientGender == "male" ? Icons.male : Icons.female,
-                  label: "Gender",
-                  value: patient.patientGender?.capitalize ?? "Not specified",
-                  scale: scale,
-                ),
-                _buildInfoRow(
-                  icon: Icons.favorite_outline,
-                  label: "Marital Status",
-                  value: patient.patientMarried == true ? "Married" : patient.patientMarried == false ? "Single" : "Not specified",
-                  scale: scale,
-                ),
-              ],
-            ),
-
-            SizedBox(height: 16 * scale),
-
-            // ✅ Contact Information Card
-            _buildSectionCard(
-              title: "Contact Information",
-              icon: Icons.contact_phone_outlined,
-              scale: scale,
-              children: [
-                _buildInfoRow(
-                  icon: Icons.email_outlined,
-                  label: "Email",
-                  value: patient.patientEmail ?? "Not provided",
-                  scale: scale,
-                  isEmail: true,
-                ),
-                _buildInfoRow(
-                  icon: Icons.phone_outlined,
-                  label: "Phone",
-                  value: patient.patientPhone ?? "Not provided",
-                  scale: scale,
-                ),
-                _buildInfoRow(
-                  icon: Icons.location_on_outlined,
-                  label: "City",
-                  value: patient.patientCity ?? "Not provided",
-                  scale: scale,
-                ),
-              ],
-            ),
-
-            SizedBox(height: 16 * scale),
-
-            // ✅ Medical Information Card (إذا كانت موجودة)
-            if (patient.patientHeight != null ||
-                patient.patientWeight != null ||
-                patient.patientBloodType != null)
-              _buildSectionCard(
-                title: "Medical Information",
-                icon: Icons.medical_information_outlined,
-                scale: scale,
+              padding: EdgeInsets.all(16 * scale),
+              child: Column(
                 children: [
-                  if (patient.patientHeight != null)
-                    _buildInfoRow(
-                      icon: Icons.height,
-                      label: "Height",
-                      value: "${patient.patientHeight} cm",
+                  // ✅ Profile Header
+                  _buildProfileHeader(patient, scale),
+
+                  SizedBox(height: 24 * scale),
+
+                  // ✅ Personal Information Card
+                  _buildSectionCard(
+                    title: "Personal Information",
+                    icon: Icons.person_outline,
+                    scale: scale,
+                    children: [
+                      _buildInfoRow(
+                        icon: Icons.cake_outlined,
+                        label: "Age",
+                        value: patient.patientAge != null &&
+                                patient.patientAge! > 0
+                            ? "${patient.patientAge} years"
+                            : "Not specified",
+                        scale: scale,
+                      ),
+                      _buildInfoRow(
+                        icon: patient.patientGender == "male"
+                            ? Icons.male
+                            : Icons.female,
+                        label: "Gender",
+                        value: patient.patientGender?.capitalize ??
+                            "Not specified",
+                        scale: scale,
+                      ),
+                      _buildInfoRow(
+                        icon: Icons.favorite_outline,
+                        label: "Marital Status",
+                        value: patient.patientMarried == true
+                            ? "Married"
+                            : patient.patientMarried == false
+                                ? "Single"
+                                : "Not specified",
+                        scale: scale,
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 16 * scale),
+
+                  // ✅ Contact Information Card
+                  _buildSectionCard(
+                    title: "Contact Information",
+                    icon: Icons.contact_phone_outlined,
+                    scale: scale,
+                    children: [
+                      _buildInfoRow(
+                        icon: Icons.email_outlined,
+                        label: "Email",
+                        value: patient.patientEmail ?? "Not provided",
+                        scale: scale,
+                        isEmail: true,
+                      ),
+                      _buildInfoRow(
+                        icon: Icons.phone_outlined,
+                        label: "Phone",
+                        value: patient.patientPhone ?? "Not provided",
+                        scale: scale,
+                      ),
+                      _buildInfoRow(
+                        icon: Icons.location_on_outlined,
+                        label: "City",
+                        value: patient.patientCity ?? "Not provided",
+                        scale: scale,
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 16 * scale),
+
+                  // ✅ Medical Information Card (إذا كانت موجودة)
+                  if (patient.patientHeight != null ||
+                      patient.patientWeight != null ||
+                      patient.patientBloodType != null)
+                    _buildSectionCard(
+                      title: "Medical Information",
+                      icon: Icons.medical_information_outlined,
                       scale: scale,
+                      children: [
+                        if (patient.patientHeight != null)
+                          _buildInfoRow(
+                            icon: Icons.height,
+                            label: "Height",
+                            value: "${patient.patientHeight} cm",
+                            scale: scale,
+                          ),
+                        if (patient.patientWeight != null)
+                          _buildInfoRow(
+                            icon: Icons.monitor_weight_outlined,
+                            label: "Weight",
+                            value: "${patient.patientWeight} kg",
+                            scale: scale,
+                          ),
+                        if (patient.patientBloodType != null)
+                          _buildInfoRow(
+                            icon: Icons.bloodtype_outlined,
+                            label: "Blood Type",
+                            value: patient.patientBloodType!,
+                            scale: scale,
+                          ),
+                      ],
                     ),
-                  if (patient.patientWeight != null)
-                    _buildInfoRow(
-                      icon: Icons.monitor_weight_outlined,
-                      label: "Weight",
-                      value: "${patient.patientWeight} kg",
-                      scale: scale,
-                    ),
-                  if (patient.patientBloodType != null)
-                    _buildInfoRow(
-                      icon: Icons.bloodtype_outlined,
-                      label: "Blood Type",
-                      value: patient.patientBloodType!,
-                      scale: scale,
-                    ),
+
+                  SizedBox(height: 24 * scale),
+
+                  // ✅ Logout Button
+                  _buildLogoutButton(scale, patientProvider, context),
+
+                  SizedBox(height: 20 * scale),
                 ],
               ),
-
-            SizedBox(height: 24 * scale),
-
-            // ✅ Logout Button
-            _buildLogoutButton(scale, patientProvider, context),
-
-            SizedBox(height: 20 * scale),
-          ],
-        ),
-      ),
+            ),
     );
   }
 
@@ -245,7 +248,7 @@ class ProfilePage extends StatelessWidget {
                 ),
                 SizedBox(height: 4 * scale),
                 Text(
-                  "Patient ID: ${patient.patientId ?? "N/A"}",
+                  "Your ID: ${patient.patientId ?? "N/A"}",
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontSize: 14 * scale,
                     color: AppColors.grey,
@@ -363,7 +366,9 @@ class ProfilePage extends StatelessWidget {
                     fontSize: 14 * scale,
                     color: isEmail ? AppColors.primary : AppColors.primaryDark,
                     fontWeight: isEmail ? FontWeight.w500 : FontWeight.normal,
-                    decoration: isEmail ? TextDecoration.underline : TextDecoration.none,
+                    decoration: isEmail
+                        ? TextDecoration.underline
+                        : TextDecoration.none,
                   ),
                 ),
               ],
@@ -375,7 +380,8 @@ class ProfilePage extends StatelessWidget {
   }
 
   // ✅ Logout Button
-  Widget _buildLogoutButton(double scale, PatientProvider provider, BuildContext context) {
+  Widget _buildLogoutButton(
+      double scale, PatientProvider provider, BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -482,7 +488,8 @@ class ProfilePage extends StatelessWidget {
   }
 
   // ✅ Logout Dialog
-  void _showLogoutDialog(BuildContext context, PatientProvider provider, double scale) {
+  void _showLogoutDialog(
+      BuildContext context, PatientProvider provider, double scale) {
     showDialog(
       context: context,
       builder: (BuildContext context) {

@@ -6,8 +6,8 @@ import '../../core/constants/app_styles.dart';
 import '../../states/appointment_state.dart';
 import '../../widgets/app_logo.dart';
 import 'booking_page.dart';
-import 'doctor_card.dart';
-import 'header.dart';
+import '../../widgets/doctor_card.dart';
+import '../../widgets/header.dart';
 import 'search_results_page.dart';
 import 'top_doctors_section.dart';
 

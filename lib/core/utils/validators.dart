@@ -2,7 +2,8 @@ class Validators {
   // التحقق من البريد الإلكتروني
   static bool isValidEmail(String email) {
     if (email.isEmpty) return false;
-    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    final emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     return emailRegex.hasMatch(email);
   }
 
@@ -33,7 +34,10 @@ class Validators {
 
   // التحقق من النوع (M/F)
   static bool isValidGender(String gender) {
-    return gender == 'M' || gender == 'F' || gender == 'Male' || gender == 'Female';
+    return gender == 'M' ||
+        gender == 'F' ||
+        gender == 'Male' ||
+        gender == 'Female';
   }
 
   // تحويل النوع لصيغة API
@@ -142,7 +146,8 @@ class Validators {
     return null;
   }
 
-  static String? validateConfirmPassword(String? password, String? confirmPassword) {
+  static String? validateConfirmPassword(
+      String? password, String? confirmPassword) {
     if (confirmPassword == null || confirmPassword.isEmpty) {
       return 'Please confirm your password';
     }

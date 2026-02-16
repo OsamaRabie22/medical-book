@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_styles.dart';
 import '../../../core/utils/responsive_utils.dart';
@@ -7,6 +8,7 @@ import '../../../core/utils/validators.dart';
 import '../../../models/patient_model.dart';
 import '../../../services/api_service.dart'; // ✅ إضافة الاستيراد
 import '../../../widgets/custom_input_field.dart';
+import '../../providers/patient_provider.dart';
 import 'login_page.dart';
 import 'medical_info_page.dart'; // ✅ للتوجيه بعد التسجيل
 
@@ -193,6 +195,11 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   // ✅ دالة التسجيل
+  // [file name]: lib/screens/auth/signup_page.dart
+
+// ... باقي الكود
+
+// ✅ دالة التسجيل المحدثة
   Future<void> _register() async {
     _validateAllFields();
 
@@ -222,57 +229,84 @@ class _SignupPageState extends State<SignupPage> {
         patientPassword: _passwordController.text,
         patientMarried: _isMarried,
         patientPhone: _phoneController.text,
-        patientImage: null,
+        birthDate: _selectedDate!.toIso8601String(),
       );
 
+      print("📝 Data being sent: ${patient.toSignupJson()}");
+
       // Call API
-      final response = await _apiService.registerPatient(patient.toSignupJson());
+      final response =
+          await _apiService.registerPatient(patient.toSignupJson());
 
-      // ✅ Debug prints
       print("Response status: ${response.statusCode}");
-      print("Response headers: ${response.headers}");
-      print("Response data type: ${response.data.runtimeType}");
-      print("Response data keys: ${response.data is Map ? response.data.keys : 'Not a Map'}");
       print("Response data: ${response.data}");
-
-      // في signup_page.dart، في دالة _register:
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // ✅ استخراج patientId من الاستجابة
         int? patientId;
 
         if (response.data is Map) {
-          // جرب أكتر من طريقة عشان نجيب الـ ID
-          patientId = response.data['patient_id'] ??
+          // جرب كل الطرق الممكنة
+          patientId = response.data['patientId'] ??
+              response.data['patient_id'] ??
               response.data['id'] ??
-              response.data['userId'] ??
-              response.data['user_id'];
-
-          // لو البيانات جوه key تاني
-          if (patientId == null && response.data['data'] != null) {
-            patientId = response.data['data']['patient_id'] ??
-                response.data['data']['id'];
-          }
+              response.data['data']?['patientId'] ??
+              response.data['data']?['patient_id'];
         }
 
-        print("Extracted patientId: $patientId");
+        print("✅ Extracted patientId: $patientId");
 
-        // ✅ حتى لو patientId == null، خلينا نكمل بصفة مؤقتة
-        // ممكن نستخدم email أو حاجة كـ temporary ID
-        final completePatient = Patient(
-          patientId: patientId ?? 0, // لو null، استخدم 0 كـ temporary
-          patientName: _nameController.text,
-          patientAge: Validators.calculateAge(_selectedDate!),
-          patientGender: Validators.formatGenderForApi(_selectedGender!),
-          patientCity: _selectedCity!,
-          patientEmail: _emailController.text,
-          patientPassword: _passwordController.text,
-          patientMarried: _isMarried,
-          patientPhone: _phoneController.text,
-          patientImage: null,
-        );
+        if (patientId != null) {
+          // ✅ إنشاء Patient object كامل
+          final completePatient = Patient(
+            patientId: patientId,
+            patientName: _nameController.text,
+            patientAge: Validators.calculateAge(_selectedDate!),
+            patientGender: Validators.formatGenderForApi(_selectedGender!),
+            patientCity: _selectedCity!,
+            patientEmail: _emailController.text,
+            patientPassword: _passwordController.text,
+            patientMarried: _isMarried,
+            patientPhone: _phoneController.text,
+            birthDate: _selectedDate!.toIso8601String(),
+          );
 
-        Get.off(() => MedicalInfoPage(patient: completePatient));
+          // ✅✅✅ حفظ البيانات في Provider
+          final patientProvider =
+              Provider.of<PatientProvider>(context, listen: false);
+          patientProvider.updatePatient(completePatient);
+
+          print("✅ Patient saved to Provider:");
+          print("   - ID: $patientId");
+          print("   - Name: ${_nameController.text}");
+          print("   - Email: ${_emailController.text}");
+
+          // ✅ روح على MedicalInfoPage
+          Get.off(() => MedicalInfoPage(patient: completePatient));
+        } else {
+          print("⚠️ No patientId in response, using temporary data");
+
+          // لو مافيش ID، استخدم بيانات مؤقتة
+          final tempPatient = Patient(
+            patientId: 0,
+            // temporary
+            patientName: _nameController.text,
+            patientAge: Validators.calculateAge(_selectedDate!),
+            patientGender: Validators.formatGenderForApi(_selectedGender!),
+            patientCity: _selectedCity!,
+            patientEmail: _emailController.text,
+            patientPassword: _passwordController.text,
+            patientMarried: _isMarried,
+            patientPhone: _phoneController.text,
+          );
+
+          // ✅ حفظ البيانات المؤقتة
+          final patientProvider =
+              Provider.of<PatientProvider>(context, listen: false);
+          patientProvider.updatePatient(tempPatient);
+
+          Get.off(() => MedicalInfoPage(patient: tempPatient));
+        }
       } else {
         Get.snackbar(
           'Registration Failed',
@@ -484,7 +518,8 @@ class _SignupPageState extends State<SignupPage> {
                   onChanged: (value) {
                     setState(() {
                       _passwordError = Validators.validatePassword(value);
-                      _confirmPasswordError = Validators.validateConfirmPassword(
+                      _confirmPasswordError =
+                          Validators.validateConfirmPassword(
                         value,
                         _confirmPasswordController.text,
                       );
@@ -504,7 +539,8 @@ class _SignupPageState extends State<SignupPage> {
                   error: _confirmPasswordError,
                   onChanged: (value) {
                     setState(() {
-                      _confirmPasswordError = Validators.validateConfirmPassword(
+                      _confirmPasswordError =
+                          Validators.validateConfirmPassword(
                         _passwordController.text,
                         value,
                       );
@@ -531,19 +567,19 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                     child: _isLoading
                         ? SizedBox(
-                      height: 20 * scale,
-                      width: 20 * scale,
-                      child: CircularProgressIndicator(
-                        color: AppColors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
+                            height: 20 * scale,
+                            width: 20 * scale,
+                            child: CircularProgressIndicator(
+                              color: AppColors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
                         : Text(
-                      "Register",
-                      style: AppTextStyles.buttonMedium.copyWith(
-                        fontSize: 18 * scale,
-                      ),
-                    ),
+                            "Register",
+                            style: AppTextStyles.buttonMedium.copyWith(
+                              fontSize: 18 * scale,
+                            ),
+                          ),
                   ),
                 ),
 
@@ -763,11 +799,11 @@ class _SignupPageState extends State<SignupPage> {
             ),
             subtitle: selectedDate != null
                 ? Text(
-              "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.greyDark,
-              ),
-            )
+                    "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.greyDark,
+                    ),
+                  )
                 : null,
             trailing: Icon(
               Icons.calendar_today,
