@@ -42,8 +42,8 @@ class Validators {
 
   // تحويل النوع لصيغة API
   static String formatGenderForApi(String gender) {
-    if (gender == 'Male' || gender == 'M') return 'M';
-    if (gender == 'Female' || gender == 'F') return 'F';
+    if (gender == 'Male' || gender == 'M') return 'Male';
+    if (gender == 'Female' || gender == 'F') return 'Female';
     return gender;
   }
 
